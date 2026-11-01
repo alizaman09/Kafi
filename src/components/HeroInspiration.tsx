@@ -86,9 +86,9 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
           ========================================================================= */}
-      <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-auto shrink-0">
+      <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-none shrink-0">
         {/* Brand: KAFI GULBERG */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-auto" style={{ touchAction: 'pan-y' }}>
           <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
             <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EAD18D]" />
           </div>
@@ -109,7 +109,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         </div>
 
         {/* Center Nav Links — #6E4E37 Frosted Capsule with Pure White Text (Desktop only) */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-6 px-4 py-1.5 rounded-full bg-[#6E4E37]/65 hover:bg-[#6E4E37]/80 backdrop-blur-md border border-white/25 shadow-[0_6px_25px_rgba(0,0,0,0.25)] transition-all">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6 px-4 py-1.5 rounded-full bg-[#6E4E37]/65 hover:bg-[#6E4E37]/80 backdrop-blur-md border border-white/25 shadow-[0_6px_25px_rgba(0,0,0,0.25)] transition-all pointer-events-auto" style={{ touchAction: 'pan-y' }}>
           <a
             href="#home"
             className="text-xs lg:text-[13px] font-black tracking-wide text-white relative after:content-[''] after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-[2px] after:bg-white hover:scale-105 transition-all drop-shadow-sm"
@@ -137,7 +137,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         </nav>
 
         {/* Right Actions: Cart Button first, then Mobile Hamburger Menu on the far right */}
-        <div className="relative flex items-center gap-1.5 sm:gap-2">
+        <div className="relative flex items-center gap-1.5 sm:gap-2 pointer-events-auto" style={{ touchAction: 'pan-y' }}>
           {/* Cart Button (Comes first) */}
           <button
             onClick={onOpenCart}
@@ -222,16 +222,16 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           2. MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
           ========================================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-auto">
+      <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-none">
 
         {/* Left Column: Bold Editorial Typography */}
-        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-2 xs:-mt-3 sm:-mt-6 lg:-mt-8">
+        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-2 xs:-mt-3 sm:-mt-6 lg:-mt-8 pointer-events-none">
 
           {/* Soft #6E4E37 ambient glow behind text */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#6E4E37]/50 via-[#6E4E37]/30 to-transparent rounded-2xl backdrop-blur-[2px] pointer-events-none" />
 
           {/* Large Bold White Heading */}
-          <h1 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] font-black tracking-tight text-white leading-[0.95] uppercase mb-1.5 sm:mb-2 md:mb-2.5 select-none drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
+          <h1 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] font-black tracking-tight text-white leading-[0.95] uppercase mb-1.5 sm:mb-2 md:mb-2.5 select-none pointer-events-none drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
             COFFEE<br />
             THE BEST FOR<br />
             <span className="text-[#EAD18D]">YOU</span>
@@ -240,14 +240,15 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           {/* View Menu Button */}
           <button
             onClick={onOpenMenu}
-            className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-full bg-white text-[#4A2F1C] text-[11px] sm:text-xs md:text-[13px] font-black tracking-wider hover:bg-[#FAF6F0] hover:scale-105 active:scale-95 transition-all shadow-lg mb-1.5 sm:mb-2 md:mb-2.5 flex items-center gap-1.5 sm:gap-2"
+            style={{ touchAction: 'pan-y' }}
+            className="pointer-events-auto px-4 py-1.5 sm:px-5 sm:py-2 rounded-full bg-white text-[#4A2F1C] text-[11px] sm:text-xs md:text-[13px] font-black tracking-wider hover:bg-[#FAF6F0] hover:scale-105 active:scale-95 transition-all shadow-lg mb-1.5 sm:mb-2 md:mb-2.5 flex items-center gap-1.5 sm:gap-2"
           >
             <span>View Menu</span>
             <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#4A2F1C]" />
           </button>
 
           {/* 4 Icon Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto" style={{ touchAction: 'pan-y' }}>
             {[
               { icon: Coffee, label: 'Hot Brew' },
               { icon: CupSoda, label: 'Iced Specials' },
@@ -266,10 +267,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         </div>
 
         {/* Right Column: Center Cup Image & Outer Circle Ring */}
-        <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0">
+        <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0 pointer-events-none">
 
           {/* Frosted Translucent #6E4E37 Circular Plate */}
-          <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border-[2.5px] sm:border-[3.5px] border-white/45 flex items-center justify-center backdrop-blur-md">
+          <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border-[2.5px] sm:border-[3.5px] border-white/45 flex items-center justify-center backdrop-blur-md pointer-events-none">
 
             {/* Inner bevel ring */}
             <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
@@ -295,13 +296,13 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           3. BOTTOM SECTION: Side-by-Side on Mobile, Anchored at Lower Position
           ========================================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto pt-0 pb-1 sm:pb-2 md:pb-3 mt-auto flex flex-col md:flex-row items-stretch md:items-end justify-between gap-2 sm:gap-3 pointer-events-auto shrink-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto pt-0 pb-1 sm:pb-2 md:pb-3 mt-auto flex flex-col md:flex-row items-stretch md:items-end justify-between gap-2 sm:gap-3 pointer-events-none shrink-0">
 
         {/* Left Side: 2 Compact Cards (Side-by-Side on all screen sizes) */}
-        <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto">
+        <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto pointer-events-auto" style={{ touchAction: 'pan-y' }}>
 
           {/* Card 1: Americano Latte — Enlarged Prominent Coffee Cup Image */}
-          <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0">
+          <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-auto">
             <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
               <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm">
                 <img
@@ -350,7 +351,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </div>
 
           {/* Card 2: Ceremonial Matcha — Enlarged Prominent Coffee Cup Image */}
-          <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0">
+          <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-auto">
             <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
               <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm">
                 <img
@@ -401,7 +402,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         </div>
 
         {/* Right Info: Story & Learn More — Compact Height */}
-        <div className="w-full md:max-w-[270px] lg:max-w-[300px] text-left flex flex-col items-start justify-end p-2 sm:p-2.5 rounded-xl bg-[#6E4E37]/65 backdrop-blur-[4px] border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.25)] shrink-0">
+        <div className="w-full md:max-w-[270px] lg:max-w-[300px] text-left flex flex-col items-start justify-end p-2 sm:p-2.5 rounded-xl bg-[#6E4E37]/65 backdrop-blur-[4px] border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.25)] shrink-0 pointer-events-auto" style={{ touchAction: 'pan-y' }}>
           <h2 className="font-sans text-[11px] sm:text-xs font-extrabold tracking-wide text-white uppercase leading-snug mb-0.5 sm:mb-1 drop-shadow-sm">
             Artisanal Roastery in Gulberg, Lahore
           </h2>

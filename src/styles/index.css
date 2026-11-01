@@ -10,6 +10,8 @@ html, body {
   background-color: var(--theme-bg-color); /* Use the exact dark background color of the app so no black gap shows */
   overscroll-behavior-y: none; /* Completely disables the elastic rubber-band bounce effect on mobile */
   overscroll-behavior: none;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 @layer base {
@@ -17,13 +19,19 @@ html, body {
     color-scheme: dark;
     background-color: var(--theme-bg-color);
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+    overscroll-behavior: none;
   }
 
   body {
     background-color: var(--theme-bg-color);
     color: #F5F2EB;
     overflow-x: hidden;
+    overflow-y: auto;
     overscroll-behavior-y: none;
+    overscroll-behavior: none;
   }
 
   /* Custom Luxury Scrollbar */

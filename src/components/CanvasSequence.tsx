@@ -205,20 +205,33 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
   return (
     <div
       ref={containerRef}
-      className="relative h-[600vh] w-full bg-[#1A100B]"
-      style={{ overscrollBehaviorY: 'none' }}
+      className="relative h-[600vh] w-full"
+      style={{ backgroundColor: '#1A100B', overscrollBehaviorY: 'none' }}
     >
-      <div className="fixed inset-0 w-full h-full min-h-[100dvh] overflow-hidden pointer-events-none">
+      {/* Fixed fullscreen viewport: covers 100% of screen, zero black gaps */}
+      <div
+        className="pointer-events-none overflow-hidden"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100dvh',
+          zIndex: 0,
+        }}
+      >
         {/* Permanent Fallback: Frame 1 behind canvas so screen never flashes black */}
         <img
           src="/frames/ezgif-frame-001.png"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          className="select-none pointer-events-none -z-10"
         />
         <canvas
           ref={canvasRef}
-          className="block h-full w-full object-cover pointer-events-none select-none relative z-0"
+          className="pointer-events-none select-none"
+          style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', position: 'relative', zIndex: 0 }}
         />
       </div>
     </div>

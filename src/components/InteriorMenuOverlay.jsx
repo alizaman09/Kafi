@@ -152,31 +152,31 @@ export default function InteriorMenuOverlay({
         opacity,
         willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col items-center justify-start overflow-y-auto no-scrollbar p-2 sm:p-4 pt-12 xs:pt-14 sm:pt-16 pb-16 sm:pb-24 transition-opacity duration-200 select-none"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col items-center justify-start overflow-hidden p-2 sm:p-4 pt-12 xs:pt-14 sm:pt-16 pb-16 sm:pb-24 transition-opacity duration-200 select-none"
     >
       {/* Parent section holding the menu cards is transparent so background animation is fully visible */}
       <div
-        style={{ touchAction: 'pan-y' }}
-        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-transparent pointer-events-auto"
+        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-transparent pointer-events-none"
       >
         {/* Sleek Compact Header with Ample Top Spacing */}
-        <div className="text-center mb-2.5 xs:mb-3 sm:mb-4 shrink-0">
-          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-[#2A1810]/85 border border-[#EAD18D]/50 text-[#EAD18D] text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md backdrop-blur-sm">
+        <div className="text-center mb-2.5 xs:mb-3 sm:mb-4 shrink-0 pointer-events-none">
+          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-[#2A1810]/85 border border-[#EAD18D]/50 text-[#EAD18D] text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md backdrop-blur-sm pointer-events-auto" style={{ touchAction: 'pan-y' }}>
             ★ KAFI GULBERG • SPECIALTY COFFEE MENU ★
           </span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black text-white mt-1.5 sm:mt-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black text-white mt-1.5 sm:mt-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] pointer-events-none">
             Artisanal Espresso & Handcrafted Brews
           </h2>
         </div>
 
         {/* 3-Column Grid: Exactly 2 rows (6 larger boxes) fit initially, 7th box onwards sits below the fold */}
-        <div className="w-full grid grid-cols-3 gap-2 xs:gap-2.5 sm:gap-3.5 md:gap-4 px-1">
+        <div className="w-full grid grid-cols-3 gap-2 xs:gap-2.5 sm:gap-3.5 md:gap-4 px-1 pointer-events-none">
           {menuItems.map((item) => {
             const isAdded = !!cart[item.id];
             return (
               <div
                 key={item.id}
-                className="group relative bg-[#3D251A]/85 hover:bg-[#4A2E20]/90 backdrop-blur-md border border-[#EAD18D]/30 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_6px_18px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_24px_rgba(234,209,141,0.25)] transition-all duration-200"
+                style={{ touchAction: 'pan-y' }}
+                className="group relative bg-[#3D251A]/85 hover:bg-[#4A2E20]/90 backdrop-blur-md border border-[#EAD18D]/30 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_6px_18px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_24px_rgba(234,209,141,0.25)] transition-all duration-200 pointer-events-auto"
               >
                 {/* Centered Product Image Container - Larger & Perfectly Visible */}
                 <div className="w-[44px] h-[44px] xs:w-[50px] xs:h-[50px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] flex items-center justify-center mx-auto mb-1 sm:mb-1.5 shrink-0 overflow-visible">
