@@ -88,7 +88,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           ========================================================================= */}
       <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-none shrink-0">
         {/* Brand: KAFI GULBERG */}
-        <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-auto" style={{ touchAction: 'pan-y' }}>
+        <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-none">
           <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
             <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EAD18D]" />
           </div>

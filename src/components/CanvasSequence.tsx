@@ -105,7 +105,7 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
     const targetWidth = Math.floor(displayWidth * dpr);
     const targetHeight = Math.floor(displayHeight * dpr);
 
-    if (Math.abs(canvas.width - targetWidth) > 4 || Math.abs(canvas.height - targetHeight) > 4) {
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
       canvas.width = targetWidth;
       canvas.height = targetHeight;
       canvas.style.width = `${displayWidth}px`;
@@ -213,10 +213,9 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
         className="pointer-events-none overflow-hidden"
         style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
+          inset: 0,
           width: '100vw',
-          height: '100dvh',
+          height: '100vh',
           zIndex: 0,
         }}
       >
@@ -225,7 +224,7 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
           src="/frames/ezgif-frame-001.png"
           alt=""
           aria-hidden="true"
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
           className="select-none pointer-events-none -z-10"
         />
         <canvas
