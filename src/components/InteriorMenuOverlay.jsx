@@ -162,7 +162,7 @@ export default function InteriorMenuOverlay({
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}
-      className="fixed inset-0 z-30 flex items-center justify-center p-1 xs:p-1.5 sm:p-3 transition-opacity duration-150 overflow-y-auto sm:overflow-hidden overflow-x-hidden no-scrollbar"
+      className="fixed inset-0 z-30 flex justify-center p-2 sm:p-4 pb-12 sm:pb-16 transition-opacity duration-150 overflow-y-auto overflow-x-hidden no-scrollbar"
     >
       {/* Explicit CSS to eliminate all browser scrollbar lines */}
       <style>{`
@@ -191,10 +191,10 @@ export default function InteriorMenuOverlay({
       {/* Background Soft Ambient Darkening so cafe interior remains visible behind */}
       <div className="fixed inset-0 pointer-events-none bg-black/40 backdrop-blur-[1px]" />
 
-      {/* Sleek Compact Header & Cards Container (Completely zero scrollbars / lines) */}
+      {/* Sleek Header & Cards Container (overflow-y-auto enabled, bottom padding added so last row is 100% visible) */}
       <div
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        className="relative z-10 w-full max-w-4xl my-auto flex flex-col items-center overflow-visible no-scrollbar"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: '2.5rem' }}
+        className="relative z-10 w-full max-w-4xl m-auto flex flex-col items-center overflow-y-auto no-scrollbar pb-10 sm:pb-12 pt-3 sm:pt-6"
       >
 
         {/* Sleek Compact Header — More Spacing Above Boxes */}
@@ -205,7 +205,7 @@ export default function InteriorMenuOverlay({
         </div>
 
         {/* 3-Column Grid of Cards with Working Transparent Cup Images */}
-        <div className="w-full grid grid-cols-3 gap-1 xs:gap-1.5 sm:gap-3 md:gap-4 px-0.5 sm:px-2 pb-2">
+        <div className="w-full grid grid-cols-3 gap-1 xs:gap-1.5 sm:gap-3 md:gap-4 px-0.5 sm:px-2 pb-4 sm:pb-6">
           {menuItems.map((item, idx) => {
             const isAdded = !!cart[item.id];
             return (
