@@ -231,10 +231,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           2. MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
           ========================================================================= */}
       <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-auto">
-        
+
         {/* Left Column: Bold Pure White Editorial Typography (Shifted Upwards) */}
         <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-3 xs:-mt-5 sm:-mt-8 lg:-mt-10">
-          
+
           {/* Soft #6E4E37 ambient glow behind text */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#6E4E37]/50 via-[#6E4E37]/30 to-transparent rounded-2xl backdrop-blur-[2px] pointer-events-none" />
 
@@ -275,10 +275,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
 
         {/* Right Column: Scaled Circle Plate with Prominent Glass Cup (Enlarged) */}
         <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0">
-          
+
           {/* Frosted Translucent #6E4E37 Circular Plate (Significantly Enlarged) */}
           <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border-[2.5px] sm:border-[3.5px] border-white/45 flex items-center justify-center backdrop-blur-md">
-            
+
             {/* Inner bevel ring */}
             <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
 
@@ -310,10 +310,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           3. BOTTOM SECTION: Side-by-Side on Mobile, Responsive & Lifted
           ========================================================================= */}
       <div className="relative z-10 w-full max-w-7xl mx-auto pt-0 pb-1 mb-0.5 sm:mb-2 md:mb-3 flex flex-col md:flex-row items-stretch md:items-end justify-between gap-2 sm:gap-3 pointer-events-auto shrink-0">
-        
+
         {/* Left Side: 2 Compact Cards (Side-by-Side on all screen sizes) */}
         <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto">
-          
+
           {/* Card 1: Americano Latte — Enlarged Prominent Coffee Cup Image */}
           <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0">
             <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
@@ -340,21 +340,19 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 <button
                   onClick={() => handleCardAdd(1)}
                   title="Add Americano Latte to Cart"
-                  className={`p-1 rounded-full border transition-colors ${
-                    cart['americano-latte']
+                  className={`p-1 rounded-full border transition-colors ${cart['americano-latte']
                       ? 'bg-emerald-500 text-white border-emerald-400'
                       : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                  }`}
+                    }`}
                 >
                   {cart['americano-latte'] ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : <ShoppingCart className="w-2.5 h-2.5" />}
                 </button>
                 <button
                   onClick={() => setLikedCard(likedCard === 1 ? null : 1)}
-                  className={`p-1 rounded-full border transition-colors ${
-                    likedCard === 1
+                  className={`p-1 rounded-full border transition-colors ${likedCard === 1
                       ? 'bg-red-500/80 text-white border-red-400'
                       : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                  }`}
+                    }`}
                 >
                   <Heart className={`w-2.5 h-2.5 ${likedCard === 1 ? 'fill-red-400' : ''}`} />
                 </button>
@@ -391,21 +389,19 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 <button
                   onClick={() => handleCardAdd(2)}
                   title="Add Ceremonial Matcha to Cart"
-                  className={`p-1 rounded-full border transition-colors ${
-                    cart['ceremonial-matcha']
+                  className={`p-1 rounded-full border transition-colors ${cart['ceremonial-matcha']
                       ? 'bg-emerald-500 text-white border-emerald-400'
                       : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                  }`}
+                    }`}
                 >
                   {cart['ceremonial-matcha'] ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : <ShoppingCart className="w-2.5 h-2.5" />}
                 </button>
                 <button
                   onClick={() => setLikedCard(likedCard === 2 ? null : 2)}
-                  className={`p-1 rounded-full border transition-colors ${
-                    likedCard === 2
+                  className={`p-1 rounded-full border transition-colors ${likedCard === 2
                       ? 'bg-red-500/80 text-white border-red-400'
                       : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                  }`}
+                    }`}
                 >
                   <Heart className={`w-2.5 h-2.5 ${likedCard === 2 ? 'fill-red-400' : ''}`} />
                 </button>
