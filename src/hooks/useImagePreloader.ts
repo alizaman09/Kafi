@@ -121,14 +121,18 @@ export function useImagePreloader({
     let active = true;
 
     async function preloadAll() {
-      // Step 1: High Priority - Load Frame 1 immediately
-      await loadSingleFrame(1);
+      // Step 1: High Priority - Load starting sequence (Frames 1-15) immediately to eliminate any initial scroll black gaps/glitches
+      const initialBatch: number[] = [];
+      for (let i = 1; i <= Math.min(15, totalFrames); i++) {
+        initialBatch.push(i);
+      }
+      await runBatch(initialBatch, 4);
       if (!active) return;
       setIsReady(true);
 
       // Step 2: Stride loading (every 8th frame) to provide quick scrub coverage
       const strideFrames: number[] = [];
-      for (let i = 8; i <= totalFrames; i += 8) {
+      for (let i = 16; i <= totalFrames; i += 8) {
         if (!framesRef.current[i - 1]) strideFrames.push(i);
       }
       await runBatch(strideFrames, concurrency);

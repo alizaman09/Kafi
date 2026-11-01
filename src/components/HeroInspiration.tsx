@@ -8,7 +8,7 @@
  */
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Coffee,
   Heart,
@@ -17,7 +17,11 @@ import {
   Flame,
   Sparkles,
   ArrowRight,
-  Check
+  Check,
+  Menu,
+  X,
+  Info,
+  Home
 } from 'lucide-react';
 
 interface HeroInspirationProps {
@@ -38,6 +42,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
   scrollProgress = 0,
 }) => {
   const [likedCard, setLikedCard] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleCardAdd = (id: number) => {
     if (onAddToCart) {
@@ -83,23 +88,23 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
           ========================================================================= */}
-      <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-0.5 sm:py-1 pointer-events-auto shrink-0">
-        {/* Brand: KAFI */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
-            <Coffee className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#EAD18D]" />
+      <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-auto shrink-0">
+        {/* Brand: KAFI GULBERG (Standardized Prominent Logo Typography) */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
+            <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EAD18D]" />
           </div>
           <div>
             <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="font-serif text-sm sm:text-base md:text-lg font-black tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+              <span className="font-serif text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                 KAFI
               </span>
-              <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#EAD18D]" />
-              <span className="text-[8px] sm:text-[10px] font-mono tracking-widest text-[#EAD18D] font-black uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EAD18D]" />
+              <span className="text-[9.5px] xs:text-[11px] sm:text-xs md:text-sm font-mono tracking-widest text-[#EAD18D] font-black uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                 Gulberg
               </span>
             </div>
-            <p className="text-[7.5px] sm:text-[9.5px] text-[#F5EFEB]/90 font-sans font-bold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+            <p className="text-[8px] xs:text-[9.5px] sm:text-xs text-[#F5EFEB]/90 font-sans font-semibold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
               Specialty Coffee & Roastery
             </p>
           </div>
@@ -133,14 +138,23 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </a>
         </nav>
 
-        {/* Right Actions: Mobile Menu Shortcut + Cart Button */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right Actions: Mobile Hamburger Menu (3 lines) + Cart Button */}
+        <div className="relative flex items-center gap-1.5 sm:gap-2">
+          {/* Hamburger Menu Icon Button on Mobile */}
           <button
-            onClick={onOpenMenu}
-            className="md:hidden px-2.5 py-1 min-h-[30px] rounded-full bg-[#6E4E37]/80 hover:bg-[#6E4E37] border border-white/25 text-white text-[10.5px] font-bold tracking-wide active:scale-95 transition-all shadow-sm flex items-center gap-1"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-[#6E4E37]/85 hover:bg-[#6E4E37] border border-white/25 text-white flex items-center justify-center active:scale-95 transition-all shadow-md shrink-0"
+            aria-label="Toggle navigation menu"
+            title="Toggle Menu"
           >
-            <span>Menu</span>
+            {isMobileMenuOpen ? (
+              <X className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
+            ) : (
+              <Menu className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
+            )}
           </button>
+
+          {/* Cart Button */}
           <button
             onClick={onOpenCart}
             className="relative px-2.5 sm:px-4 py-1 sm:py-1.5 min-h-[30px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1 sm:gap-1.5 shrink-0"
@@ -154,6 +168,62 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
               </span>
             )}
           </button>
+
+          {/* Mobile Navigation Dropdown Menu: Home, Menu, Details */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-[#1C0F08]/95 backdrop-blur-xl border border-white/20 shadow-2xl p-2 z-50 flex flex-col gap-1 pointer-events-auto"
+              >
+                {/* 1. Home */}
+                <button
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
+                    <Home className="w-3.5 h-3.5" />
+                  </div>
+                  <span>Home</span>
+                </button>
+
+                {/* 2. Menu */}
+                <button
+                  onClick={() => {
+                    if (onOpenMenu) onOpenMenu();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
+                    <Coffee className="w-3.5 h-3.5" />
+                  </div>
+                  <span>Menu</span>
+                </button>
+
+                {/* 3. Details */}
+                <button
+                  onClick={() => {
+                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                    window.scrollTo({ top: maxScroll, behavior: 'smooth' });
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
+                    <Info className="w-3.5 h-3.5" />
+                  </div>
+                  <span>Details</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
@@ -162,8 +232,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           ========================================================================= */}
       <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-auto">
         
-        {/* Left Column: Bold Pure White Editorial Typography */}
-        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl">
+        {/* Left Column: Bold Pure White Editorial Typography (Shifted Upwards) */}
+        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-3 xs:-mt-5 sm:-mt-8 lg:-mt-10">
           
           {/* Soft #6E4E37 ambient glow behind text */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#6E4E37]/50 via-[#6E4E37]/30 to-transparent rounded-2xl backdrop-blur-[2px] pointer-events-none" />
@@ -203,16 +273,16 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Scaled Circle Plate with Glass Cup */}
-        <div className="lg:col-span-6 flex items-center justify-center relative">
+        {/* Right Column: Scaled Circle Plate with Prominent Glass Cup (Enlarged) */}
+        <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0">
           
-          {/* Frosted Translucent #6E4E37 Circular Plate */}
-          <div className="relative w-28 h-28 xs:w-36 xs:h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-60 lg:h-60 rounded-full bg-gradient-to-br from-[#6E4E37]/60 via-[#6E4E37]/45 to-[#6E4E37]/25 shadow-[0_16px_36px_rgba(0,0,0,0.35)] border-[2px] sm:border-[3px] border-white/40 flex items-center justify-center backdrop-blur-md">
+          {/* Frosted Translucent #6E4E37 Circular Plate (Significantly Enlarged) */}
+          <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border-[2.5px] sm:border-[3.5px] border-white/45 flex items-center justify-center backdrop-blur-md">
             
             {/* Inner bevel ring */}
-            <div className="w-[88%] h-[88%] rounded-full border border-white/30 shadow-inner flex items-center justify-center" />
+            <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
 
-            {/* Glass Cup scaled proportionally */}
+            {/* Glass Cup scaled prominently */}
             <motion.div
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -221,12 +291,12 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
               <img
                 src="/assets/glass_latte.png"
                 alt="KAFI Artisan Iced Spanish Latte"
-                className="w-20 xs:w-26 sm:w-36 md:w-44 lg:w-48 h-auto max-h-[76%] object-contain drop-shadow-[0_14px_22px_rgba(0,0,0,0.5)] select-none"
+                className="w-28 xs:w-36 sm:w-46 md:w-54 lg:w-60 h-auto max-h-[85%] object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.55)] select-none"
               />
             </motion.div>
 
             {/* Badge */}
-            <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[7px] sm:text-[8px] font-mono font-black tracking-wider shadow-lg border border-white/20">
+            <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-2 py-0.5 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[7.5px] sm:text-[8.5px] font-mono font-black tracking-wider shadow-lg border border-white/20">
               ★ KAFI GULBERG
             </div>
 
@@ -244,14 +314,14 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         {/* Left Side: 2 Compact Cards (Side-by-Side on all screen sizes) */}
         <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto">
           
-          {/* Card 1: Americano Latte — Ultra Compact & Clean */}
+          {/* Card 1: Americano Latte — Enlarged Prominent Coffee Cup Image */}
           <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0">
-            <div className="w-full flex items-center justify-center -mt-5 sm:-mt-6 mb-0.5">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/40 p-0.5 shadow-md flex items-center justify-center border-2 border-white/40">
+            <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
+              <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm">
                 <img
                   src="/assets/glass_latte.png"
                   alt="Iced Spanish Latte"
-                  className="w-5 h-auto max-h-7 sm:w-6 sm:max-h-8 object-contain drop-shadow-sm select-none"
+                  className="w-8 xs:w-10 sm:w-12 h-auto max-h-[88%] object-contain drop-shadow-md select-none"
                 />
               </div>
             </div>
@@ -295,14 +365,14 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
             </div>
           </div>
 
-          {/* Card 2: Ceremonial Matcha — Ultra Compact & Clean */}
+          {/* Card 2: Ceremonial Matcha — Enlarged Prominent Coffee Cup Image */}
           <div className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0">
-            <div className="w-full flex items-center justify-center -mt-5 sm:-mt-6 mb-0.5">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/40 p-0.5 shadow-md flex items-center justify-center border-2 border-white/40">
+            <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
+              <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm">
                 <img
                   src="/assets/glass_matcha.png"
                   alt="Ceremonial Iced Matcha"
-                  className="w-5 h-auto max-h-7 sm:w-6 sm:max-h-8 object-contain drop-shadow-sm select-none"
+                  className="w-8 xs:w-10 sm:w-12 h-auto max-h-[88%] object-contain drop-shadow-md select-none"
                 />
               </div>
             </div>

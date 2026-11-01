@@ -95,10 +95,7 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
       const fraction = clamped - floorIndex;
 
       // Base frame (floor)
-      let img1 = getNearestFrame(floorIndex);
-      if (!img1 || !img1.complete || img1.naturalWidth === 0) {
-        img1 = lastValidImgRef.current;
-      }
+      let img1 = getNearestFrame(floorIndex) || lastValidImgRef.current || getNearestFrame(0);
 
       if (!img1 || !img1.complete || img1.naturalWidth === 0) return;
 
@@ -138,14 +135,19 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
     const targetWidth = Math.floor(displayWidth * dpr);
     const targetHeight = Math.floor(displayHeight * dpr);
 
-    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+    if (Math.abs(canvas.width - targetWidth) > 4 || Math.abs(canvas.height - targetHeight) > 4) {
       canvas.width = targetWidth;
       canvas.height = targetHeight;
       canvas.style.width = `${displayWidth}px`;
       canvas.style.height = `${displayHeight}px`;
 
-      // Redraw immediately after resize
-      renderFrame(currentFrameRef.current);
+      // Redraw immediately after resize without flashing black
+      if (lastValidImgRef.current) {
+        const ctx = canvas.getContext('2d', { alpha: false });
+        if (ctx) drawCoverImage(ctx, lastValidImgRef.current, canvas);
+      } else {
+        renderFrame(currentFrameRef.current);
+      }
     }
   }, [renderFrame]);
 
@@ -233,12 +235,19 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
       {/* 
         FIXED FULLSCREEN VIEWPORT:
         Fixed inset-0 pins the canvas directly to the screen at all times.
-        It is physically impossible for the canvas to scroll up and reveal a black gap underneath!
+        Guarantees zero black borders, zero gap when starting to scroll.
       */}
-      <div className="fixed inset-0 h-screen w-screen overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 w-full h-full min-h-[100dvh] overflow-hidden pointer-events-none">
+        {/* Permanent Fallback: Frame 1 is permanently behind canvas so the screen NEVER flashes black */}
+        <img
+          src="/frames/ezgif-frame-001.png"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
+        />
         <canvas
           ref={canvasRef}
-          className="block h-full w-full object-cover pointer-events-none select-none"
+          className="block h-full w-full object-cover pointer-events-none select-none relative z-0"
         />
       </div>
     </div>
