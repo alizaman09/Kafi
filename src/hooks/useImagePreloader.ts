@@ -40,6 +40,7 @@ export function useImagePreloader({
   const loadingPromisesRef = useRef<Map<number, Promise<HTMLImageElement | null>>>(new Map());
   const isCancelledRef = useRef<boolean>(false);
   const loadedCountRef = useRef<number>(0);
+  const lastRequestedRef = useRef<number>(-1);
 
   if (framesRef.current.length !== totalFrames) {
     framesRef.current = new Array(totalFrames).fill(null);
@@ -71,8 +72,7 @@ export function useImagePreloader({
         img.onload = () => {
           framesRef.current[index] = img;
           loadedCountRef.current += 1;
-          // Throttle progress state to prevent 300 rapid re-render cycles
-          if (loadedCountRef.current % 25 === 0 || loadedCountRef.current === totalFrames) {
+          if (loadedCountRef.current % 15 === 0 || loadedCountRef.current === totalFrames) {
             setLoadedCount(loadedCountRef.current);
             setProgress(Math.round((loadedCountRef.current / totalFrames) * 100));
           }
@@ -80,7 +80,6 @@ export function useImagePreloader({
         };
 
         img.onerror = () => {
-          console.warn(`[CanvasSequence] Frame ${frameNum} failed to load.`);
           resolve(null);
         };
 
@@ -96,12 +95,16 @@ export function useImagePreloader({
   );
 
   /**
-   * Proactively request priority streaming for frames around current scrub target
+   * Proactively request priority streaming for frames around current scrub target (throttled)
    */
   const requestPriorityFrame = useCallback(
     (targetIndex: number) => {
+      // Throttle: only trigger if target moves by at least 1 full frame
+      if (Math.abs(targetIndex - lastRequestedRef.current) < 1) return;
+      lastRequestedRef.current = targetIndex;
+
       const center = Math.max(1, Math.min(totalFrames, Math.round(targetIndex) + 1));
-      const range = 10; // Load 10 frames ahead and behind for instant scrubbing
+      const range = 4; // Tight range to prevent memory and network saturation
       for (let offset = 0; offset <= range; offset++) {
         const ahead = center + offset;
         const behind = center - offset;
@@ -121,28 +124,29 @@ export function useImagePreloader({
     let active = true;
 
     async function preloadAll() {
-      // Step 1: High Priority - Load starting sequence (Frames 1-15) immediately to eliminate any initial scroll black gaps/glitches
+      // Step 1: Initial priority paint - load starting 5 frames immediately
       const initialBatch: number[] = [];
-      for (let i = 1; i <= Math.min(15, totalFrames); i++) {
+      for (let i = 1; i <= Math.min(5, totalFrames); i++) {
         initialBatch.push(i);
       }
-      await runBatch(initialBatch, 4);
+      await runBatch(initialBatch, 3);
       if (!active) return;
       setIsReady(true);
 
-      // Step 2: Stride loading (every 8th frame) to provide quick scrub coverage
+      // Step 2: Keyframe stride (every 4th frame) for instant smooth scrubbing coverage
       const strideFrames: number[] = [];
-      for (let i = 16; i <= totalFrames; i += 8) {
+      for (let i = 6; i <= totalFrames; i += 4) {
         if (!framesRef.current[i - 1]) strideFrames.push(i);
       }
-      await runBatch(strideFrames, concurrency);
+      await runBatch(strideFrames, 4);
+      if (!active) return;
 
-      // Step 3: Complete all remaining frames sequentially
+      // Step 3: Progressive idle loading for intermediate frames
       const remaining: number[] = [];
       for (let i = 1; i <= totalFrames; i++) {
         if (!framesRef.current[i - 1]) remaining.push(i);
       }
-      await runBatch(remaining, concurrency);
+      await runBatch(remaining, 2);
     }
 
     async function runBatch(items: number[], limit: number) {
@@ -164,24 +168,23 @@ export function useImagePreloader({
       active = false;
       isCancelledRef.current = true;
     };
-  }, [loadSingleFrame, totalFrames, concurrency]);
+  }, [loadSingleFrame, totalFrames]);
 
   /**
-   * Returns exact frame or closest loaded neighbor.
-   * Guarantees zero black frames or flickering during scroll.
+   * Fast Nearest-neighbor lookup with zero GC thrashing
    */
   const getNearestFrame = useCallback(
     (targetIndex: number): HTMLImageElement | null => {
       const frames = framesRef.current;
       const idx = Math.max(0, Math.min(totalFrames - 1, Math.round(targetIndex)));
 
-      // Exact match
+      // 1. Exact match
       if (frames[idx]?.complete && frames[idx]?.naturalWidth) {
         return frames[idx];
       }
 
-      // Search outward for closest loaded neighbor
-      for (let offset = 1; offset < totalFrames; offset++) {
+      // 2. Search outward up to 8 frames
+      for (let offset = 1; offset <= 8; offset++) {
         const left = idx - offset;
         if (left >= 0 && frames[left]?.complete && frames[left]?.naturalWidth) {
           return frames[left];
@@ -192,14 +195,14 @@ export function useImagePreloader({
         }
       }
 
-      // Fallback to first loaded frame in array
-      for (let i = 0; i < totalFrames; i++) {
-        if (frames[i]?.complete && frames[i]?.naturalWidth) {
-          return frames[i];
-        }
+      // 3. Fallback to stride keyframe
+      const strideIdx = Math.round(idx / 4) * 4;
+      if (strideIdx >= 0 && strideIdx < totalFrames && frames[strideIdx]?.complete && frames[strideIdx]?.naturalWidth) {
+        return frames[strideIdx];
       }
 
-      return null;
+      // 4. Fallback to first loaded frame
+      return frames[0] || null;
     },
     [totalFrames]
   );

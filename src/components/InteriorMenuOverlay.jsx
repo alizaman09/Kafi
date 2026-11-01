@@ -129,14 +129,14 @@ export default function InteriorMenuOverlay({
   return (
     <section
       id="menu-section"
-      className="relative z-10 w-full min-h-screen py-12 sm:py-16 md:py-24 px-2 sm:px-4 md:px-6 bg-[#160E0A] flex flex-col items-center justify-center text-[#EDE4D8] select-none"
+      className="relative z-10 w-full min-h-screen py-12 sm:py-16 md:py-24 px-2 sm:px-4 md:px-6 bg-transparent flex flex-col items-center justify-center text-[#EDE4D8] select-none"
     >
-      {/* Background Soft Glow */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#1A100B] via-[#160E0A] to-[#120B08]" />
+      {/* Ambient Darkening Veil so canvas sequence behind is visible while maintaining focus */}
+      <div className="absolute inset-0 pointer-events-none bg-black/45 backdrop-blur-[0.5px]" />
 
       {/* Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
       <div
-        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08] sm:bg-[#180E09] border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
+        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08]/95 sm:bg-[#180E09]/95 border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-xl"
       >
         {/* Sleek Compact Header */}
         <div className="text-center mb-3 sm:mb-5 shrink-0">

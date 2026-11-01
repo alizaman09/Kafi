@@ -69,15 +69,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
   return (
     <section
       id="hero-section"
-      className="relative z-10 w-full min-h-[100dvh] flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-4 sm:pb-6 overflow-hidden select-none bg-[#1A100B]"
+      className="relative z-10 w-full min-h-[100dvh] flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-4 sm:pb-6 overflow-hidden select-none bg-transparent"
     >
-      {/* Background Cafe Image & Warm Coffee Ambient Veil */}
-      <img
-        src="/frames/ezgif-frame-001.png"
-        alt="KAFI Gulberg Exterior"
-        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
-      />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/55 via-[#6E4E37]/40 to-[#1A100B]/80 backdrop-blur-[1px] -z-10" />
+      {/* Warm Coffee Ambient Veil allowing Canvas Scrollytelling behind to show */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/35 via-transparent to-[#1A100B]/50 backdrop-blur-[0.5px] -z-10" />
 
       {/* =========================================================================
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text

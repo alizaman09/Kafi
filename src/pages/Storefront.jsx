@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import CanvasSequence from '../components/CanvasSequence';
 import HeroInspiration from '../components/HeroInspiration';
 import InteriorMenuOverlay from '../components/InteriorMenuOverlay';
 import MenuModal from '../components/MenuModal';
@@ -82,6 +83,9 @@ export default function Storefront() {
         backgroundColor: 'var(--theme-bg-color, #1A100B)',
       }}
     >
+      {/* Underlying 300-Frame Scrollytelling Animation (Pinned Fullscreen Canvas) */}
+      <CanvasSequence totalFrames={300} lerpFactor={0.08} />
+
       {/* 1. Hero Section: Clean, compact 1-screen viewport design */}
       <HeroInspiration
         onOpenMenu={handleScrollToMenu}

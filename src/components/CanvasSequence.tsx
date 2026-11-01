@@ -77,8 +77,8 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
   const rafIdRef = useRef<number | null>(null);
 
   /**
-   * Renders the current sub-frame with continuous cross-fade blending.
-   * Eliminates all discrete stepped judder between frames for a buttery 120fps feel.
+   * High-performance single-pass frame renderer.
+   * Eliminates GPU-thrashing dual drawImage alpha blending.
    */
   const renderFrame = useCallback(
     (frameFloat: number) => {
@@ -88,34 +88,19 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
       const ctx = canvas.getContext('2d', { alpha: false });
       if (!ctx) return;
 
-      // Clamp between frame 0 and totalFrames - 1
       const clamped = Math.max(0, Math.min(totalFrames - 1, frameFloat));
-      const floorIndex = Math.floor(clamped);
-      const ceilIndex = Math.min(totalFrames - 1, floorIndex + 1);
-      const fraction = clamped - floorIndex;
+      const targetIndex = Math.round(clamped);
 
-      // Base frame (floor)
-      let img1 = getNearestFrame(floorIndex) || lastValidImgRef.current || getNearestFrame(0);
+      // Only repaint when integer frame actually updates
+      if (targetIndex === lastDrawnFrameRef.current && lastValidImgRef.current) return;
 
-      if (!img1 || !img1.complete || img1.naturalWidth === 0) return;
+      const img = getNearestFrame(targetIndex) || lastValidImgRef.current || getNearestFrame(0);
+      if (!img || !img.complete || img.naturalWidth === 0) return;
 
-      lastValidImgRef.current = img1;
+      lastValidImgRef.current = img;
+      lastDrawnFrameRef.current = targetIndex;
 
-      // Draw base frame at 100% opacity
-      ctx.globalAlpha = 1.0;
-      drawCoverImage(ctx, img1, canvas);
-
-      // Sub-frame cross-dissolve: blend next frame smoothly if fraction > 0
-      if (fraction > 0.01 && ceilIndex !== floorIndex) {
-        const img2 = getNearestFrame(ceilIndex);
-        if (img2 && img2.complete && img2.naturalWidth > 0 && img2 !== img1) {
-          ctx.globalAlpha = fraction;
-          drawCoverImage(ctx, img2, canvas);
-          ctx.globalAlpha = 1.0; // Reset
-        }
-      }
-
-      lastDrawnFrameRef.current = frameFloat;
+      drawCoverImage(ctx, img, canvas);
     },
     [getNearestFrame, totalFrames]
   );
@@ -127,7 +112,6 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Cap DPR at 2 for optimal balance between razor sharpness and GPU memory
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
@@ -141,7 +125,6 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
       canvas.style.width = `${displayWidth}px`;
       canvas.style.height = `${displayHeight}px`;
 
-      // Redraw immediately after resize without flashing black
       if (lastValidImgRef.current) {
         const ctx = canvas.getContext('2d', { alpha: false });
         if (ctx) drawCoverImage(ctx, lastValidImgRef.current, canvas);
@@ -158,9 +141,11 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
   }, [handleResize]);
 
   /**
-   * High performance scroll handler using window.scrollY to eliminate layout thrashing
+   * Smooth, throttled scroll handler
    */
   useEffect(() => {
+    let lastProgress = -1;
+
     const handleScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -168,11 +153,12 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
       if (maxScroll <= 0) return;
 
       const progress = Math.max(0, Math.min(1, scrollY / maxScroll));
-      const newTarget = progress * (totalFrames - 1);
+      if (Math.abs(progress - lastProgress) < 0.0005) return;
+      lastProgress = progress;
 
+      const newTarget = progress * (totalFrames - 1);
       targetFrameRef.current = newTarget;
 
-      // Proactively request priority streaming for frames near target
       requestPriorityFrame(newTarget);
     };
 
@@ -184,7 +170,6 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
 
   /**
    * Continuous RAF loop with frame-rate independent Delta-Time LERP
-   * for liquid, butter-smooth scrubbing across 60Hz, 120Hz, and 144Hz monitors.
    */
   useEffect(() => {
     let isRunning = true;
@@ -193,26 +178,20 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
     const tick = (now: number) => {
       if (!isRunning) return;
 
-      // Delta-time normalization relative to 60fps (16.667ms)
       const deltaMs = Math.min(64, Math.max(1, now - lastTime));
       lastTime = now;
 
       const prev = currentFrameRef.current;
       const target = targetFrameRef.current;
 
-      // Liquid momentum exponential decay
       const effectiveFactor = 1 - Math.pow(1 - lerpFactor, deltaMs / 16.667);
       currentFrameRef.current = prev + (target - prev) * effectiveFactor;
 
-      // Snap when resting close to target to save GPU/CPU cycles
-      if (Math.abs(target - currentFrameRef.current) < 0.002) {
+      if (Math.abs(target - currentFrameRef.current) < 0.02) {
         currentFrameRef.current = target;
       }
 
-      // Re-render continuously whenever position updates
-      if (Math.abs(currentFrameRef.current - lastDrawnFrameRef.current) > 0.005) {
-        renderFrame(currentFrameRef.current);
-      }
+      renderFrame(currentFrameRef.current);
 
       rafIdRef.current = requestAnimationFrame(tick);
     };
@@ -228,29 +207,18 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
   }, [isReady, lerpFactor, renderFrame]);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative h-[600vh] w-full bg-[#1A100B]"
-      style={{ overscrollBehaviorY: 'none' }}
-    >
-      {/* 
-        FIXED FULLSCREEN VIEWPORT:
-        Fixed inset-0 pins the canvas directly to the screen at all times.
-        Guarantees zero black borders, zero gap when starting to scroll.
-      */}
-      <div className="fixed inset-0 w-full h-full min-h-[100dvh] overflow-hidden pointer-events-none">
-        {/* Permanent Fallback: Frame 1 is permanently behind canvas so the screen NEVER flashes black */}
-        <img
-          src="/frames/ezgif-frame-001.png"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
-        />
-        <canvas
-          ref={canvasRef}
-          className="block h-full w-full object-cover pointer-events-none select-none relative z-0"
-        />
-      </div>
+    <div className="fixed inset-0 w-full h-full min-h-[100dvh] overflow-hidden pointer-events-none -z-10">
+      {/* Permanent Fallback: Frame 1 is permanently behind canvas so the screen NEVER flashes black */}
+      <img
+        src="/frames/ezgif-frame-001.png"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
+      />
+      <canvas
+        ref={canvasRef}
+        className="block h-full w-full object-cover pointer-events-none select-none relative z-0"
+      />
     </div>
   );
 };
