@@ -154,13 +154,10 @@ export default function InteriorMenuOverlay({
       }}
       className="fixed inset-0 z-30 pointer-events-none flex items-center justify-center p-2 sm:p-4 pb-4 sm:pb-6 h-[100dvh] max-h-[100dvh] transition-opacity duration-200 overflow-hidden select-none"
     >
-      {/* 1. Ambient Darkening Veil over video so interior remains visible around the menu */}
-      <div className="fixed inset-0 pointer-events-none bg-black/65 backdrop-blur-[1px] transition-opacity duration-300" />
-
-      {/* 2. Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
+      {/* Parent section holding the menu cards is transparent so background animation is fully visible */}
       <div
         style={{ touchAction: 'pan-y' }}
-        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08]/95 sm:bg-[#180E09]/95 border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-2.5 xs:p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-xl pointer-events-auto"
+        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-transparent p-2.5 xs:p-3 sm:p-5 md:p-6 pointer-events-auto"
       >
         {/* Sleek Compact Header */}
         <div className="text-center mb-3 sm:mb-5 shrink-0">
