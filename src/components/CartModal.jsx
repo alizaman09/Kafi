@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   ShoppingCart,
@@ -145,27 +144,20 @@ export default function CartModal({
     onClose();
   };
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 xs:p-3 sm:p-5 overflow-hidden">
-          {/* Frosted Dark Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleClose}
-            className="fixed inset-0 bg-black/75 backdrop-blur-md"
-          />
+  if (!isOpen) return null;
 
-          {/* Cart Modal Container — Warm Coffee Color (#6E4E37 / #4A2F1C) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 15 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative z-10 w-full max-w-xl max-h-[94vh] sm:max-h-[92vh] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#4A2F1C] via-[#331D12] to-[#1C0F08] border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.65)] flex flex-col overflow-hidden text-white font-sans"
-          >
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 xs:p-3 sm:p-5 overflow-hidden">
+      {/* Frosted Dark Backdrop */}
+      <div
+        onClick={handleClose}
+        className="fixed inset-0 bg-black/75 backdrop-blur-md cursor-pointer"
+      />
+
+      {/* Cart Modal Container — Warm Coffee Color (#6E4E37 / #4A2F1C) */}
+      <div
+        className="relative z-10 w-full max-w-xl max-h-[94vh] sm:max-h-[92vh] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#4A2F1C] via-[#331D12] to-[#1C0F08] border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.65)] flex flex-col overflow-hidden text-white font-sans"
+      >
             {/* Header */}
             <div className="px-3.5 sm:px-5 py-3 sm:py-4 bg-[#6E4E37]/70 border-b border-white/15 flex items-center justify-between backdrop-blur-md shrink-0">
               <div className="flex items-center gap-2 sm:gap-2.5">
@@ -197,9 +189,7 @@ export default function CartModal({
             <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 sm:space-y-4">
               {isSuccess ? (
                 /* Order Success View */
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                <div
                   className="py-8 text-center flex flex-col items-center justify-center space-y-3"
                 >
                   <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 mb-1">
@@ -219,7 +209,7 @@ export default function CartModal({
                       Continue Exploring Menu
                     </button>
                   </div>
-                </motion.div>
+                </div>
               ) : cartItems.length === 0 ? (
                 /* Empty Cart View */
                 <div className="py-12 text-center flex flex-col items-center justify-center space-y-3">
@@ -420,10 +410,8 @@ export default function CartModal({
                 </>
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
-      )}
-    </AnimatePresence>
   );
 }
 

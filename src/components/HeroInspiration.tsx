@@ -8,7 +8,6 @@
  */
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Coffee,
   Heart,
@@ -69,10 +68,15 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
   return (
     <section
       id="hero-section"
-      className="relative z-10 w-full min-h-[100dvh] flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-4 sm:pb-6 overflow-hidden select-none bg-transparent"
+      className="relative z-10 w-full min-h-[100dvh] flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-4 sm:pb-6 overflow-hidden select-none bg-[#1A100B]"
     >
-      {/* Warm Coffee Ambient Veil allowing Canvas Scrollytelling behind to show */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/35 via-transparent to-[#1A100B]/50 backdrop-blur-[0.5px] -z-10" />
+      {/* High-Resolution Cafe Background Image & Warm Ambient Veil */}
+      <img
+        src="/frames/ezgif-frame-001.png"
+        alt="KAFI Gulberg Exterior"
+        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
+      />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/50 via-[#6E4E37]/30 to-[#1A100B]/80 -z-10" />
 
       {/* =========================================================================
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
@@ -159,60 +163,54 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </button>
 
           {/* Mobile Navigation Dropdown Menu: Home, Menu, Details */}
-          <AnimatePresence>
-            {isMobileMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -6, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-[#1C0F08]/95 backdrop-blur-xl border border-white/20 shadow-2xl p-2 z-50 flex flex-col gap-1 pointer-events-auto"
+          {isMobileMenuOpen && (
+            <div
+              className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-[#1C0F08]/95 backdrop-blur-xl border border-white/20 shadow-2xl p-2 z-50 flex flex-col gap-1 pointer-events-auto"
+            >
+              {/* 1. Home */}
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
               >
-                {/* 1. Home */}
-                <button
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
-                    <Home className="w-3.5 h-3.5" />
-                  </div>
-                  <span>Home</span>
-                </button>
+                <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
+                  <Home className="w-3.5 h-3.5" />
+                </div>
+                <span>Home</span>
+              </button>
 
-                {/* 2. Menu */}
-                <button
-                  onClick={() => {
-                    if (onOpenMenu) onOpenMenu();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
-                    <Coffee className="w-3.5 h-3.5" />
-                  </div>
-                  <span>Menu</span>
-                </button>
+              {/* 2. Menu */}
+              <button
+                onClick={() => {
+                  if (onOpenMenu) onOpenMenu();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
+              >
+                <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
+                  <Coffee className="w-3.5 h-3.5" />
+                </div>
+                <span>Menu</span>
+              </button>
 
-                {/* 3. Details */}
-                <button
-                  onClick={() => {
-                    const el = document.getElementById('footer-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
-                    <Info className="w-3.5 h-3.5" />
-                  </div>
-                  <span>Details</span>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {/* 3. Details */}
+              <button
+                onClick={() => {
+                  const el = document.getElementById('footer-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
+              >
+                <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
+                  <Info className="w-3.5 h-3.5" />
+                </div>
+                <span>Details</span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 

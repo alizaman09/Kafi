@@ -6,7 +6,6 @@
  * - Exactly matches the user reference image (3x3 grid, exact text & colors)
  */
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ShoppingCart, MessageSquare, Sparkles, Coffee, AlertCircle } from 'lucide-react';
 
 const COFFEE_MENU_ITEMS = [
@@ -129,10 +128,10 @@ export default function InteriorMenuOverlay({
   return (
     <section
       id="menu-section"
-      className="relative z-10 w-full min-h-screen py-12 sm:py-16 md:py-24 px-2 sm:px-4 md:px-6 bg-transparent flex flex-col items-center justify-center text-[#EDE4D8] select-none"
+      className="relative z-10 w-full min-h-screen py-12 sm:py-16 md:py-24 px-2 sm:px-4 md:px-6 bg-[#160E0A] flex flex-col items-center justify-center text-[#EDE4D8] select-none"
     >
-      {/* Ambient Darkening Veil so canvas sequence behind is visible while maintaining focus */}
-      <div className="absolute inset-0 pointer-events-none bg-black/45 backdrop-blur-[0.5px]" />
+      {/* Deep Espresso Subtle Ambient Gradient */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#1A100B] via-[#160E0A] to-[#140C08]" />
 
       {/* Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
       <div

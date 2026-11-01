@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Coffee, MapPin, Phone, Clock, Globe, ArrowUp } from 'lucide-react';
 
 export default function FooterSection({
@@ -20,7 +19,7 @@ export default function FooterSection({
   return (
     <footer
       id="footer-section"
-      className="relative z-10 w-full bg-transparent text-[#F5F2EB] flex flex-col justify-between pt-10 sm:pt-16 pb-8 select-none"
+      className="relative z-10 w-full bg-[#1A120B] text-[#F5F2EB] flex flex-col justify-between pt-10 sm:pt-16 pb-8 select-none"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center py-6 sm:py-10">

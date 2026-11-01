@@ -3,7 +3,6 @@
  * Interactive luxury drawer for KAFI Gulberg's artisanal specialty coffee & bakery menu
  */
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Coffee, Flame, Check, MessageSquare } from 'lucide-react';
 
 const MENU_CATEGORIES = [
@@ -182,25 +181,17 @@ export default function MenuModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md"
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md cursor-pointer"
+      />
 
-        {/* Modal Window */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-4xl max-h-[90vh] glass-panel-espresso rounded-3xl border border-gold-500/30 flex flex-col shadow-2xl overflow-hidden z-10"
-        >
+      {/* Modal Window */}
+      <div
+        className="relative w-full max-w-4xl max-h-[90vh] glass-panel-espresso rounded-3xl border border-gold-500/30 flex flex-col shadow-2xl overflow-hidden z-10"
+      >
           {/* Header */}
           <div className="p-4 sm:p-6 md:p-8 border-b border-white/10 flex items-center justify-between">
             <div>
@@ -313,8 +304,7 @@ export default function MenuModal({ isOpen, onClose }) {
               </a>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 }
