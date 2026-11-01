@@ -35,10 +35,9 @@ export default function FooterSection({
     <div
       style={{
         opacity,
-        pointerEvents: isInteractive ? 'auto' : 'none',
         willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 flex flex-col justify-between pt-4 sm:pt-8 md:pt-10 h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden transition-opacity duration-200 no-scrollbar"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-3 sm:pt-6 md:pt-8 h-[100dvh] max-h-[100dvh] overflow-hidden transition-opacity duration-200 no-scrollbar select-none"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center select-none pointer-events-none py-3 sm:py-6">
@@ -61,7 +60,10 @@ export default function FooterSection({
       </div>
 
       {/* 2. Footer Container — Dark Theme: Deep Espresso Brown #1A120B with Warm Beige/Gold Accents */}
-      <footer className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 backdrop-blur-md border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB] pointer-events-auto">
+      <footer
+        style={{ touchAction: 'pan-y' }}
+        className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 backdrop-blur-md border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB] pointer-events-auto"
+      >
 
         {/* Subtle Ambient Gold Gradient Line on top */}
         <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#EAD18D]/50 to-transparent" />

@@ -153,70 +153,43 @@ export default function InteriorMenuOverlay({
     <div
       style={{
         opacity,
-        pointerEvents: isInteractive ? 'auto' : 'none',
         willChange: 'opacity',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
       }}
-      className="fixed inset-0 z-30 flex justify-center p-2 sm:p-4 pb-12 sm:pb-16 h-[100dvh] max-h-[100dvh] transition-opacity duration-200 overflow-y-auto overflow-x-hidden no-scrollbar"
+      className="fixed inset-0 z-30 pointer-events-none flex items-center justify-center p-2 sm:p-4 pb-4 sm:pb-6 h-[100dvh] max-h-[100dvh] transition-opacity duration-200 overflow-hidden select-none"
     >
-      {/* Explicit CSS to eliminate all browser scrollbar lines */}
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar,
-        .no-scrollbar *::-webkit-scrollbar {
-          display: none !important;
-          width: 0 !important;
-          height: 0 !important;
-          background: transparent !important;
-          -webkit-appearance: none !important;
-        }
-        .no-scrollbar::-webkit-scrollbar-thumb,
-        .no-scrollbar *::-webkit-scrollbar-thumb,
-        .no-scrollbar::-webkit-scrollbar-track,
-        .no-scrollbar *::-webkit-scrollbar-track {
-          display: none !important;
-          background: transparent !important;
-          border: none !important;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none !important;
-          scrollbar-width: none !important;
-        }
-      `}</style>
+      {/* 1. Strong Dark Ambient Backdrop so cafe interior doesn't clash with menu text */}
+      <div className="fixed inset-0 pointer-events-none bg-black/75 backdrop-blur-md transition-opacity duration-300" />
 
-      {/* Background Soft Ambient Darkening so cafe interior remains visible behind */}
-      <div className="fixed inset-0 pointer-events-none bg-black/40 backdrop-blur-[1px]" />
-
-      {/* Sleek Header & Cards Container (overflow-y-auto enabled, bottom padding added so last row is 100% visible) */}
+      {/* 2. Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
       <div
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: '2.5rem' }}
-        className="relative z-10 w-full max-w-4xl m-auto flex flex-col items-center overflow-y-auto no-scrollbar pb-10 sm:pb-12 pt-3 sm:pt-6"
+        style={{ touchAction: 'pan-y' }}
+        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08]/95 sm:bg-[#180E09]/95 border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-2.5 xs:p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-xl pointer-events-auto"
       >
-
-        {/* Sleek Compact Header — More Spacing Above Boxes */}
-        <div className="text-center mb-2.5 xs:mb-3 sm:mb-5 md:mb-6 shrink-0">
-          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-0.5 sm:py-1 rounded-full bg-[#6E4E37]/90 border border-[#EAD18D]/60 text-[#EAD18D] text-[8.5px] xs:text-[10px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-lg backdrop-blur-md">
+        {/* Sleek Compact Header */}
+        <div className="text-center mb-2 xs:mb-2.5 sm:mb-4 shrink-0">
+          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-0.5 sm:py-1 rounded-full bg-[#2A1810] border border-[#EAD18D]/50 text-[#EAD18D] text-[8.5px] xs:text-[9.5px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md">
             ★ KAFI GULBERG • SPECIALTY COFFEE MENU ★
           </span>
         </div>
 
-        {/* 3-Column Grid of Cards with Working Transparent Cup Images */}
-        <div className="w-full grid grid-cols-3 gap-1 xs:gap-1.5 sm:gap-3 md:gap-4 px-0.5 sm:px-2 pb-4 sm:pb-6">
-          {menuItems.map((item, idx) => {
+        {/* 3-Column Grid of Solid, High-Contrast Product Cards */}
+        <div className="w-full grid grid-cols-3 gap-1.5 xs:gap-2 sm:gap-3 md:gap-4 px-0.5 sm:px-1">
+          {menuItems.map((item) => {
             const isAdded = !!cart[item.id];
             return (
               <div
                 key={item.id}
-                className="group relative bg-[#6E4E37]/45 hover:bg-[#6E4E37]/65 border border-white/25 hover:border-[#EAD18D]/80 rounded-xl sm:rounded-2xl p-1.5 xs:p-2 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:shadow-[0_14px_30px_rgba(234,209,141,0.2)] transition-all duration-200 backdrop-blur-md"
+                style={{ touchAction: 'pan-y' }}
+                className="group relative bg-[#24150E] hover:bg-[#2C1B12] border border-[#EAD18D]/20 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-1.5 xs:p-2 sm:p-2.5 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_8px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_12px_28px_rgba(234,209,141,0.2)] transition-all duration-200"
               >
-                {/* Centered Product Image Container: ~65x65px on mobile, ~75x75px on desktop */}
-                <div className="w-[65px] h-[65px] sm:w-[75px] sm:h-[75px] flex items-center justify-center mx-auto mb-1.5 sm:mb-2 shrink-0 overflow-visible">
-                  <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_6px_12px_rgba(0,0,0,0.45)]">
+                {/* Centered Product Image Container */}
+                <div className="w-[46px] h-[46px] xs:w-[54px] xs:h-[54px] sm:w-[68px] sm:h-[68px] md:w-[76px] md:h-[76px] flex items-center justify-center mx-auto mb-1 sm:mb-1.5 shrink-0 overflow-visible">
+                  <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)]">
                     {item.cupImg && !brokenImages[item.id] ? (
                       <img
                         src={item.cupImg}
                         alt={item.name}
-                        onError={() => setBrokenImages(prev => ({ ...prev, [item.id]: true }))}
+                        onError={() => setBrokenImages((prev) => ({ ...prev, [item.id]: true }))}
                         className="w-full h-full object-contain select-none"
                       />
                     ) : brokenImages[item.id] ? (
@@ -225,35 +198,36 @@ export default function InteriorMenuOverlay({
                         <span>Image error</span>
                       </div>
                     ) : (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#3D2214]/85 border border-white/20 flex items-center justify-center text-[#EAD18D]">
-                        <Coffee className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#3D2214] border border-white/20 flex items-center justify-center text-[#EAD18D]">
+                        <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Price in Crisp Warm Caramel Gold */}
-                <div className="font-sans font-extrabold text-[10.5px] sm:text-xs md:text-sm text-[#F3D68E] tracking-wider mb-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
+                <div className="font-mono font-extrabold text-[10px] xs:text-[11px] sm:text-xs md:text-sm text-[#F3D68E] tracking-wider mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                   {item.price}
                 </div>
 
                 {/* Title in Crisp Pure White Modern Sans */}
-                <h3 className="font-sans font-extrabold text-[9.5px] xs:text-[11px] sm:text-xs md:text-[13px] text-white tracking-wide uppercase leading-snug mb-0.5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] line-clamp-1">
+                <h3 className="font-sans font-black text-[9px] xs:text-[10px] sm:text-xs md:text-[13px] text-white tracking-wide uppercase leading-tight mb-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-1">
                   {item.name}
                 </h3>
 
-                {/* Subtitle / Description in High-Contrast Soft White */}
-                <p className="font-sans text-[7.5px] xs:text-[8.5px] sm:text-[9.5px] text-white/90 leading-tight sm:leading-relaxed line-clamp-1 sm:line-clamp-2 max-w-[190px] mb-1.5 sm:mb-2 font-medium drop-shadow-sm">
+                {/* Subtitle / Description */}
+                <p className="font-sans text-[7px] xs:text-[8px] sm:text-[9px] text-[#D8CFBF] leading-tight line-clamp-1 sm:line-clamp-2 max-w-[180px] mb-1 sm:mb-1.5 font-medium">
                   {item.desc}
                 </p>
 
-                {/* Clear, High-Contrast Pill "+ Add to cart" Button */}
+                {/* Pill "+ Add to cart" Button */}
                 <button
                   onClick={() => handleToggle(item)}
-                  className={`w-full max-w-[90px] xs:max-w-[105px] sm:max-w-none sm:min-w-[110px] min-h-[28px] xs:min-h-[32px] sm:min-h-[36px] px-1.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full font-sans font-extrabold text-[8.5px] xs:text-[10px] sm:text-[11px] tracking-wide shadow-md transition-all flex items-center justify-center gap-1 active:scale-95 ${isAdded
-                    ? 'bg-emerald-500 text-white hover:bg-emerald-600'
-                    : 'bg-[#FDFBF7] hover:bg-white text-[#3D2214] hover:scale-105'
-                    }`}
+                  className={`w-full max-w-[85px] xs:max-w-[95px] sm:max-w-[110px] min-h-[25px] xs:min-h-[27px] sm:min-h-[32px] px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full font-sans font-extrabold text-[8px] xs:text-[9.5px] sm:text-[10.5px] tracking-wide shadow-md transition-all flex items-center justify-center gap-1 active:scale-95 ${
+                    isAdded
+                      ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                      : 'bg-[#FDFBF7] hover:bg-white text-[#24150E] hover:scale-105'
+                  }`}
                 >
                   {isAdded ? (
                     <>
@@ -272,12 +246,12 @@ export default function InteriorMenuOverlay({
           })}
         </div>
 
-        {/* Floating Cart Bar when items are selected */}
+        {/* Floating Cart Bar inside Panel when items are selected */}
         {totalCount > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-2 sm:mt-3 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#6E4E37]/95 border border-[#EAD18D]/50 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold text-white shrink-0"
+            className="mt-2.5 sm:mt-3.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#2A1810] border border-[#EAD18D]/50 shadow-[0_10px_25px_rgba(0,0,0,0.6)] flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold text-white shrink-0"
           >
             <div className="flex items-center gap-1 sm:gap-1.5">
               <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#EAD18D]" />
@@ -294,7 +268,6 @@ export default function InteriorMenuOverlay({
             </button>
           </motion.div>
         )}
-
       </div>
     </div>
   );
