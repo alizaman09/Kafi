@@ -138,23 +138,9 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </a>
         </nav>
 
-        {/* Right Actions: Mobile Hamburger Menu (3 lines) + Cart Button */}
+        {/* Right Actions: Cart Button first, then Mobile Hamburger Menu on the far right */}
         <div className="relative flex items-center gap-1.5 sm:gap-2">
-          {/* Hamburger Menu Icon Button on Mobile */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-[#6E4E37]/85 hover:bg-[#6E4E37] border border-white/25 text-white flex items-center justify-center active:scale-95 transition-all shadow-md shrink-0"
-            aria-label="Toggle navigation menu"
-            title="Toggle Menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
-            ) : (
-              <Menu className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
-            )}
-          </button>
-
-          {/* Cart Button */}
+          {/* Cart Button (Comes first) */}
           <button
             onClick={onOpenCart}
             className="relative px-2.5 sm:px-4 py-1 sm:py-1.5 min-h-[30px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1 sm:gap-1.5 shrink-0"
@@ -166,6 +152,20 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
               <span className="px-1.5 py-0.2 rounded-full bg-[#3D2214] text-[#EAD18D] text-[9px] sm:text-[10px] font-mono font-black shadow-sm">
                 {cartCount}
               </span>
+            )}
+          </button>
+
+          {/* Hamburger Menu Icon Button on Mobile (Far Right) */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-[#6E4E37]/85 hover:bg-[#6E4E37] border border-white/25 text-white flex items-center justify-center active:scale-95 transition-all shadow-md shrink-0"
+            aria-label="Toggle navigation menu"
+            title="Toggle Menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
+            ) : (
+              <Menu className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
             )}
           </button>
 
@@ -230,10 +230,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           2. MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
           ========================================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-auto">
+      <div className="relative z-10 w-full max-w-7xl mx-auto mt-0.5 xs:mt-1 sm:my-auto py-0 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-1.5 xs:gap-2.5 lg:gap-4 items-center pointer-events-auto">
 
-        {/* Left Column: Bold Pure White Editorial Typography (Shifted Upwards) */}
-        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-3 xs:-mt-5 sm:-mt-8 lg:-mt-10">
+        {/* Left Column: Bold Editorial Typography (Shifted Significantly Higher Up Near Navbar) */}
+        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-6 xs:-mt-9 sm:-mt-12 lg:-mt-14">
 
           {/* Soft #6E4E37 ambient glow behind text */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#6E4E37]/50 via-[#6E4E37]/30 to-transparent rounded-2xl backdrop-blur-[2px] pointer-events-none" />
@@ -273,16 +273,16 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Scaled Circle Plate with Prominent Glass Cup (Enlarged) */}
+        {/* Right Column: Massively Enlarged Center Cup Image & Outer Circle Ring */}
         <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0">
 
-          {/* Frosted Translucent #6E4E37 Circular Plate (Significantly Enlarged) */}
-          <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border-[2.5px] sm:border-[3.5px] border-white/45 flex items-center justify-center backdrop-blur-md">
+          {/* Frosted Translucent #6E4E37 Circular Plate (Massively Enlarged) */}
+          <div className="relative w-48 h-48 xs:w-56 xs:h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_20px_50px_rgba(0,0,0,0.45)] border-[3px] sm:border-[4px] border-white/45 flex items-center justify-center backdrop-blur-md">
 
             {/* Inner bevel ring */}
             <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
 
-            {/* Glass Cup scaled prominently */}
+            {/* Glass Cup scaled massively */}
             <motion.div
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -291,12 +291,12 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
               <img
                 src="/assets/glass_latte.png"
                 alt="KAFI Artisan Iced Spanish Latte"
-                className="w-28 xs:w-36 sm:w-46 md:w-54 lg:w-60 h-auto max-h-[85%] object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.55)] select-none"
+                className="w-36 xs:w-44 sm:w-52 md:w-60 lg:w-68 h-auto max-h-[90%] object-contain drop-shadow-[0_18px_28px_rgba(0,0,0,0.6)] select-none"
               />
             </motion.div>
 
             {/* Badge */}
-            <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-2 py-0.5 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[7.5px] sm:text-[8.5px] font-mono font-black tracking-wider shadow-lg border border-white/20">
+            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[8px] sm:text-[9px] font-mono font-black tracking-wider shadow-lg border border-white/20">
               ★ KAFI GULBERG
             </div>
 
