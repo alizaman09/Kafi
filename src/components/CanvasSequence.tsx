@@ -1,0 +1,248 @@
+/**
+ * CanvasSequence.tsx
+ * Ultra-smooth HTML5 Canvas Scrollytelling Component for KAFI Gulberg (300 Frames)
+ * 
+ * CRITICAL FIXES APPLIED:
+ * 1. ZERO BLACK GAPS & ZERO BLACK BARS (FIXED POSITIONING):
+ *    - Uses 'fixed inset-0 w-full h-full' instead of sticky. The canvas is pinned to the viewport
+ *      at 100vw x 100vh and NEVER scrolls off-screen or reveals black space at the bottom.
+ * 2. PERFECT drawCoverImage (OBJECT-FIT COVER):
+ *    - Uses Math.max(cWidth / imgWidth, cHeight / imgHeight) so the image dynamically covers 100%
+ *      of the screen on all resolutions (ultrawide, desktop, tablet, mobile) with zero black gaps.
+ * 3. NO BLACK SCREEN FLASHING:
+ *    - Omitted ctx.clearRect() so previous frames are seamlessly overwritten.
+ *    - Persistent lastValidImgRef ensures canvas NEVER flashes black if a frame is momentarily loading.
+ * 4. BUTTER-SMOOTH LERP + RAF:
+ *    - Decoupled scroll listener using window.scrollY + requestAnimationFrame with LERP (0.08)
+ *      for liquid Apple-grade momentum scrubbing.
+ */
+
+import React, { useRef, useEffect, useCallback } from 'react';
+import { useImagePreloader } from '../hooks/useImagePreloader';
+
+interface CanvasSequenceProps {
+  totalFrames?: number;
+  lerpFactor?: number;
+}
+
+/**
+ * Calculates exact cover scaling and centers the image on the canvas.
+ * Guarantees zero black borders, zero letterboxes, and zero pillarboxes.
+ */
+function drawCoverImage(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  canvas: HTMLCanvasElement
+) {
+  if (!img) return;
+
+  const cWidth = canvas.width;
+  const cHeight = canvas.height;
+  const imgWidth = img.naturalWidth || img.width;
+  const imgHeight = img.naturalHeight || img.height;
+
+  if (!imgWidth || !imgHeight || !cWidth || !cHeight) return;
+
+  // Scale factor that guarantees 100% coverage of the canvas
+  const scale = Math.max(cWidth / imgWidth, cHeight / imgHeight);
+  const renderWidth = imgWidth * scale;
+  const renderHeight = imgHeight * scale;
+
+  // Center the image (offsets will be <= 0, preventing any black gaps on any side)
+  const offsetX = (cWidth - renderWidth) / 2;
+  const offsetY = (cHeight - renderHeight) / 2;
+
+  // Overwrite the entire destination rectangle seamlessly
+  ctx.drawImage(img, offsetX, offsetY, renderWidth, renderHeight);
+}
+
+export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
+  totalFrames = 300,
+  lerpFactor = 0.06,
+}) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Preloader hook with priority queue and nearest-neighbor fallback
+  const { isReady, getNearestFrame, requestPriorityFrame } = useImagePreloader({
+    totalFrames,
+    concurrency: 12,
+  });
+
+  // State tracked in mutable refs for garbage-collection-free 60/120/144fps performance
+  const currentFrameRef = useRef<number>(0);
+  const targetFrameRef = useRef<number>(0);
+  const lastDrawnFrameRef = useRef<number>(-1);
+  const lastValidImgRef = useRef<HTMLImageElement | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+
+  /**
+   * Renders the current sub-frame with continuous cross-fade blending.
+   * Eliminates all discrete stepped judder between frames for a buttery 120fps feel.
+   */
+  const renderFrame = useCallback(
+    (frameFloat: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d', { alpha: false });
+      if (!ctx) return;
+
+      // Clamp between frame 0 and totalFrames - 1
+      const clamped = Math.max(0, Math.min(totalFrames - 1, frameFloat));
+      const floorIndex = Math.floor(clamped);
+      const ceilIndex = Math.min(totalFrames - 1, floorIndex + 1);
+      const fraction = clamped - floorIndex;
+
+      // Base frame (floor)
+      let img1 = getNearestFrame(floorIndex);
+      if (!img1 || !img1.complete || img1.naturalWidth === 0) {
+        img1 = lastValidImgRef.current;
+      }
+
+      if (!img1 || !img1.complete || img1.naturalWidth === 0) return;
+
+      lastValidImgRef.current = img1;
+
+      // Draw base frame at 100% opacity
+      ctx.globalAlpha = 1.0;
+      drawCoverImage(ctx, img1, canvas);
+
+      // Sub-frame cross-dissolve: blend next frame smoothly if fraction > 0
+      if (fraction > 0.01 && ceilIndex !== floorIndex) {
+        const img2 = getNearestFrame(ceilIndex);
+        if (img2 && img2.complete && img2.naturalWidth > 0 && img2 !== img1) {
+          ctx.globalAlpha = fraction;
+          drawCoverImage(ctx, img2, canvas);
+          ctx.globalAlpha = 1.0; // Reset
+        }
+      }
+
+      lastDrawnFrameRef.current = frameFloat;
+    },
+    [getNearestFrame, totalFrames]
+  );
+
+  /**
+   * Retina DPR calibration & dynamic resize
+   */
+  const handleResize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Cap DPR at 2 for optimal balance between razor sharpness and GPU memory
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const displayWidth = window.innerWidth;
+    const displayHeight = window.innerHeight;
+
+    const targetWidth = Math.floor(displayWidth * dpr);
+    const targetHeight = Math.floor(displayHeight * dpr);
+
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
+
+      // Redraw immediately after resize
+      renderFrame(currentFrameRef.current);
+    }
+  }, [renderFrame]);
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
+
+  /**
+   * High performance scroll handler using window.scrollY to eliminate layout thrashing
+   */
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (maxScroll <= 0) return;
+
+      const progress = Math.max(0, Math.min(1, scrollY / maxScroll));
+      const newTarget = progress * (totalFrames - 1);
+
+      targetFrameRef.current = newTarget;
+
+      // Proactively request priority streaming for frames near target
+      requestPriorityFrame(newTarget);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [totalFrames, requestPriorityFrame]);
+
+  /**
+   * Continuous RAF loop with frame-rate independent Delta-Time LERP
+   * for liquid, butter-smooth scrubbing across 60Hz, 120Hz, and 144Hz monitors.
+   */
+  useEffect(() => {
+    let isRunning = true;
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      if (!isRunning) return;
+
+      // Delta-time normalization relative to 60fps (16.667ms)
+      const deltaMs = Math.min(64, Math.max(1, now - lastTime));
+      lastTime = now;
+
+      const prev = currentFrameRef.current;
+      const target = targetFrameRef.current;
+
+      // Liquid momentum exponential decay
+      const effectiveFactor = 1 - Math.pow(1 - lerpFactor, deltaMs / 16.667);
+      currentFrameRef.current = prev + (target - prev) * effectiveFactor;
+
+      // Snap when resting close to target to save GPU/CPU cycles
+      if (Math.abs(target - currentFrameRef.current) < 0.002) {
+        currentFrameRef.current = target;
+      }
+
+      // Re-render continuously whenever position updates
+      if (Math.abs(currentFrameRef.current - lastDrawnFrameRef.current) > 0.005) {
+        renderFrame(currentFrameRef.current);
+      }
+
+      rafIdRef.current = requestAnimationFrame(tick);
+    };
+
+    rafIdRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      isRunning = false;
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, [isReady, lerpFactor, renderFrame]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative h-[600vh] w-full bg-[#0A0A0A]"
+    >
+      {/* 
+        FIXED FULLSCREEN VIEWPORT:
+        Fixed inset-0 pins the canvas directly to the screen at all times.
+        It is physically impossible for the canvas to scroll up and reveal a black gap underneath!
+      */}
+      <div className="fixed inset-0 h-screen w-screen overflow-hidden pointer-events-none">
+        <canvas
+          ref={canvasRef}
+          className="block h-full w-full object-cover pointer-events-none select-none"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default CanvasSequence;
