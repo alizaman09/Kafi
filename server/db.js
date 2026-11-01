@@ -143,16 +143,16 @@ export function initDatabase() {
 }
 
 function seedInitialData() {
-  // 1. Seed Default Admin
-  const adminCheck = db.prepare('SELECT id FROM admins WHERE email = ?').get('admin@kafi.pk');
+  // 1. Seed Authorized Super Admin
+  const adminCheck = db.prepare('SELECT id FROM admins WHERE email = ?').get('alizaman3060@gmail.com');
   if (!adminCheck) {
     const salt = bcrypt.genSaltSync(10);
-    const passwordHash = bcrypt.hashSync('admin123456', salt);
+    const passwordHash = bcrypt.hashSync('03060666126ak', salt);
     db.prepare(`
       INSERT INTO admins (email, password_hash, name, role)
       VALUES (?, ?, ?, ?)
-    `).run('admin@kafi.pk', passwordHash, 'KAFI Super Admin', 'super_admin');
-    console.log('Seeded default admin: admin@kafi.pk / admin123456');
+    `).run('alizaman3060@gmail.com', passwordHash, 'Ali Zaman (Super Admin)', 'super_admin');
+    console.log('Seeded authorized admin: alizaman3060@gmail.com');
   }
 
   // 2. Seed Categories

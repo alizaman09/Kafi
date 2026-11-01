@@ -31,12 +31,6 @@ export default function AdminLogin() {
     }
   };
 
-  const handleFillDemo = () => {
-    setEmail('admin@kafi.pk');
-    setPassword('admin123456');
-    setError('');
-  };
-
   return (
     <div className="min-h-screen bg-[#0D0907] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden text-[#EDE4D8]">
       {/* Decorative Warm Ambient Glows */}
@@ -85,7 +79,7 @@ export default function AdminLogin() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@kafi.pk"
+                  placeholder="Gmail"
                   className="w-full pl-10 pr-4 py-2.5 bg-[#1F1510] border border-[#3A251A] rounded-xl text-sm text-[#F5EBE1] placeholder-[#664E3F] focus:outline-none focus:border-[#C49A6C] focus:ring-1 focus:ring-[#C49A6C] transition-all"
                 />
               </div>
@@ -132,19 +126,6 @@ export default function AdminLogin() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Helper */}
-          <div className="mt-6 pt-5 border-t border-[#221610] text-center">
-            <p className="text-[11px] text-[#7A6455] mb-2.5">Quick Testing Credentials:</p>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="w-full py-2 px-3 rounded-lg bg-[#221711] hover:bg-[#2C1D15] border border-[#382317] text-xs font-mono text-[#D4A373] transition-colors flex items-center justify-center space-x-2"
-            >
-              <span>admin@kafi.pk / admin123456</span>
-              <span className="text-[10px] text-[#8C6D53] underline font-sans">Fill</span>
-            </button>
-          </div>
         </div>
 
         <div className="text-center mt-6">
