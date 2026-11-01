@@ -76,7 +76,6 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
     <div
       style={{
         opacity: heroOpacity,
-        pointerEvents: heroOpacity > 0.3 ? 'auto' : 'none',
         willChange: 'opacity',
       }}
       className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 h-[100dvh] max-h-[100dvh] w-full overflow-hidden no-scrollbar"

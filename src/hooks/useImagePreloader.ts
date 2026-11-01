@@ -2,215 +2,182 @@
  * useImagePreloader.ts
  * Multi-tier high-performance image preloader for 300 sequential frames.
  *
- * Key Optimizations:
- * 1. Instant Initial Paint: Frame 1 is prioritized and decoded first.
- * 2. Dynamic Priority Queue: Frames in the active scroll viewport are loaded on-demand.
- * 3. Nearest-Neighbor Fallback: If a frame is still streaming, instantly renders the closest loaded neighbor.
- * 4. Zero Memory Leaks: Cached HTMLImageElements are preserved in memory without garbage-collection thrashing.
+ * Safe, Leak-Free, Infinite-Loop-Proof Design:
+ * 1. Global singleton cache prevents re-fetching or memory leaks.
+ * 2. Stable module-level functions with NO dynamic inline dependencies.
+ * 3. Mount-only effect: runs once without triggering re-render cascades.
+ * 4. Zero thread blocking: progressive frames load in idle callbacks.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 export interface UseImagePreloaderOptions {
   totalFrames?: number;
-  concurrency?: number;
   frameUrlPattern?: (index: number) => string;
 }
 
 export interface UseImagePreloaderReturn {
   isReady: boolean;
-  progress: number;
-  loadedCount: number;
   totalFrames: number;
   getNearestFrame: (targetIndex: number) => HTMLImageElement | null;
   requestPriorityFrame: (targetIndex: number) => void;
 }
 
-export function useImagePreloader({
-  totalFrames = 300,
-  concurrency = 12,
-  frameUrlPattern = (i) => `/frames/ezgif-frame-${String(i).padStart(3, '0')}.png`,
-}: UseImagePreloaderOptions = {}): UseImagePreloaderReturn {
-  const [progress, setProgress] = useState<number>(0);
-  const [loadedCount, setLoadedCount] = useState<number>(0);
-  const [isReady, setIsReady] = useState<boolean>(false);
+const DEFAULT_FRAME_URL = (i: number): string =>
+  `/frames/ezgif-frame-${String(i).padStart(3, '0')}.png`;
 
-  // In-memory cache for all 300 HTMLImageElements
-  const framesRef = useRef<(HTMLImageElement | null)[]>([]);
-  const loadingPromisesRef = useRef<Map<number, Promise<HTMLImageElement | null>>>(new Map());
-  const isCancelledRef = useRef<boolean>(false);
-  const loadedCountRef = useRef<number>(0);
-  const lastRequestedRef = useRef<number>(-1);
+// Global singleton cache so frames persist across component re-renders
+const globalFramesCache = new Map<number, HTMLImageElement>();
+const globalLoadingPromises = new Map<number, Promise<HTMLImageElement | null>>();
 
-  if (framesRef.current.length !== totalFrames) {
-    framesRef.current = new Array(totalFrames).fill(null);
+function loadFrame(
+  frameNum: number,
+  urlPattern: (i: number) => string = DEFAULT_FRAME_URL
+): Promise<HTMLImageElement | null> {
+  const cached = globalFramesCache.get(frameNum);
+  if (cached && cached.complete && cached.naturalWidth > 0) {
+    return Promise.resolve(cached);
   }
 
-  /**
-   * Loads a single image frame safely with async decoding
-   */
-  const loadSingleFrame = useCallback(
-    (frameNum: number): Promise<HTMLImageElement | null> => {
-      const index = frameNum - 1;
+  const existingPromise = globalLoadingPromises.get(frameNum);
+  if (existingPromise) {
+    return existingPromise;
+  }
 
-      // Already loaded
-      if (framesRef.current[index]?.complete && framesRef.current[index]?.naturalWidth) {
-        return Promise.resolve(framesRef.current[index]);
+  const promise = new Promise<HTMLImageElement | null>((resolve) => {
+    const img = new Image();
+    img.decoding = 'async';
+
+    img.onload = () => {
+      globalFramesCache.set(frameNum, img);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      resolve(null);
+    };
+
+    img.src = urlPattern(frameNum);
+  }).finally(() => {
+    globalLoadingPromises.delete(frameNum);
+  });
+
+  globalLoadingPromises.set(frameNum, promise);
+  return promise;
+}
+
+export function useImagePreloader({
+  totalFrames = 300,
+  frameUrlPattern = DEFAULT_FRAME_URL,
+}: UseImagePreloaderOptions = {}): UseImagePreloaderReturn {
+  const [isReady, setIsReady] = useState<boolean>(() => {
+    const f1 = globalFramesCache.get(1);
+    return Boolean(f1 && f1.complete && f1.naturalWidth > 0);
+  });
+
+  const lastRequestedRef = useRef<number>(-1);
+  const isCancelledRef = useRef<boolean>(false);
+
+  // Mount-only preloading with zero infinite loops
+  useEffect(() => {
+    isCancelledRef.current = false;
+
+    // 1. Prioritize Frame 1 for immediate crisp display
+    loadFrame(1, frameUrlPattern).then((img) => {
+      if (!isCancelledRef.current && img) {
+        setIsReady(true);
       }
+    });
 
-      // Already loading in flight
-      if (loadingPromisesRef.current.has(frameNum)) {
-        return loadingPromisesRef.current.get(frameNum)!;
-      }
+    // 2. Preload first 5 frames immediately for smooth initial motion
+    for (let i = 2; i <= Math.min(5, totalFrames); i++) {
+      loadFrame(i, frameUrlPattern);
+    }
 
-      const promise = new Promise<HTMLImageElement | null>((resolve) => {
-        if (isCancelledRef.current) return resolve(null);
+    // 3. Stride loading (every 5th frame) staggered across idle intervals
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let strideIndex = 10;
 
-        const img = new Image();
-        img.decoding = 'async';
+    const scheduleNextStride = () => {
+      if (isCancelledRef.current || strideIndex > totalFrames) return;
 
-        img.onload = () => {
-          framesRef.current[index] = img;
-          loadedCountRef.current += 1;
-          if (loadedCountRef.current % 15 === 0 || loadedCountRef.current === totalFrames) {
-            setLoadedCount(loadedCountRef.current);
-            setProgress(Math.round((loadedCountRef.current / totalFrames) * 100));
-          }
-          resolve(img);
-        };
+      loadFrame(strideIndex, frameUrlPattern);
+      strideIndex += 5;
 
-        img.onerror = () => {
-          resolve(null);
-        };
+      // Small 30ms interval keeps the main thread 100% responsive and free
+      timeoutId = setTimeout(scheduleNextStride, 30);
+    };
 
-        img.src = frameUrlPattern(frameNum);
-      }).finally(() => {
-        loadingPromisesRef.current.delete(frameNum);
-      });
+    timeoutId = setTimeout(scheduleNextStride, 100);
 
-      loadingPromisesRef.current.set(frameNum, promise);
-      return promise;
-    },
-    [frameUrlPattern, totalFrames]
-  );
+    return () => {
+      isCancelledRef.current = true;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [totalFrames]); // Strict primitive dependency only
 
   /**
-   * Proactively request priority streaming for frames around current scrub target (throttled)
+   * On-demand priority loading for frames near the current scrub position
    */
   const requestPriorityFrame = useCallback(
     (targetIndex: number) => {
-      // Throttle: only trigger if target moves by at least 1 full frame
-      if (Math.abs(targetIndex - lastRequestedRef.current) < 1) return;
-      lastRequestedRef.current = targetIndex;
+      const frameNum = Math.max(1, Math.min(totalFrames, Math.round(targetIndex) + 1));
+      if (Math.abs(frameNum - lastRequestedRef.current) < 2) return;
+      lastRequestedRef.current = frameNum;
 
-      const center = Math.max(1, Math.min(totalFrames, Math.round(targetIndex) + 1));
-      const range = 4; // Tight range to prevent memory and network saturation
-      for (let offset = 0; offset <= range; offset++) {
-        const ahead = center + offset;
-        const behind = center - offset;
-        if (ahead <= totalFrames && !framesRef.current[ahead - 1]) {
-          loadSingleFrame(ahead);
-        }
-        if (behind >= 1 && !framesRef.current[behind - 1]) {
-          loadSingleFrame(behind);
-        }
+      // Fetch immediate surrounding frames
+      for (let offset = 0; offset <= 3; offset++) {
+        const ahead = frameNum + offset;
+        const behind = frameNum - offset;
+        if (ahead <= totalFrames) loadFrame(ahead, frameUrlPattern);
+        if (behind >= 1) loadFrame(behind, frameUrlPattern);
       }
     },
-    [loadSingleFrame, totalFrames]
+    [totalFrames, frameUrlPattern]
   );
 
-  useEffect(() => {
-    isCancelledRef.current = false;
-    let active = true;
-
-    async function preloadAll() {
-      // Step 1: Initial priority paint - load starting 5 frames immediately
-      const initialBatch: number[] = [];
-      for (let i = 1; i <= Math.min(5, totalFrames); i++) {
-        initialBatch.push(i);
-      }
-      await runBatch(initialBatch, 3);
-      if (!active) return;
-      setIsReady(true);
-
-      // Step 2: Keyframe stride (every 4th frame) for instant smooth scrubbing coverage
-      const strideFrames: number[] = [];
-      for (let i = 6; i <= totalFrames; i += 4) {
-        if (!framesRef.current[i - 1]) strideFrames.push(i);
-      }
-      await runBatch(strideFrames, 4);
-      if (!active) return;
-
-      // Step 3: Progressive idle loading for intermediate frames
-      const remaining: number[] = [];
-      for (let i = 1; i <= totalFrames; i++) {
-        if (!framesRef.current[i - 1]) remaining.push(i);
-      }
-      await runBatch(remaining, 2);
-    }
-
-    async function runBatch(items: number[], limit: number) {
-      let cursor = 0;
-      const workers = Array(Math.min(limit, items.length))
-        .fill(null)
-        .map(async () => {
-          while (cursor < items.length && !isCancelledRef.current) {
-            const frameNum = items[cursor++];
-            await loadSingleFrame(frameNum);
-          }
-        });
-      await Promise.all(workers);
-    }
-
-    preloadAll();
-
-    return () => {
-      active = false;
-      isCancelledRef.current = true;
-    };
-  }, [loadSingleFrame, totalFrames]);
-
   /**
-   * Fast Nearest-neighbor lookup with zero GC thrashing
+   * Fast, synchronous nearest-neighbor frame lookup from cache
    */
   const getNearestFrame = useCallback(
     (targetIndex: number): HTMLImageElement | null => {
-      const frames = framesRef.current;
-      const idx = Math.max(0, Math.min(totalFrames - 1, Math.round(targetIndex)));
+      const frameNum = Math.max(1, Math.min(totalFrames, Math.round(targetIndex) + 1));
 
-      // 1. Exact match
-      if (frames[idx]?.complete && frames[idx]?.naturalWidth) {
-        return frames[idx];
+      // 1. Direct hit
+      const exact = globalFramesCache.get(frameNum);
+      if (exact && exact.complete && exact.naturalWidth > 0) {
+        return exact;
       }
 
-      // 2. Search outward up to 8 frames
-      for (let offset = 1; offset <= 8; offset++) {
-        const left = idx - offset;
-        if (left >= 0 && frames[left]?.complete && frames[left]?.naturalWidth) {
-          return frames[left];
-        }
-        const right = idx + offset;
-        if (right < totalFrames && frames[right]?.complete && frames[right]?.naturalWidth) {
-          return frames[right];
-        }
+      // 2. Search outward up to 10 frames
+      for (let offset = 1; offset <= 10; offset++) {
+        const left = globalFramesCache.get(frameNum - offset);
+        if (left && left.complete && left.naturalWidth > 0) return left;
+
+        const right = globalFramesCache.get(frameNum + offset);
+        if (right && right.complete && right.naturalWidth > 0) return right;
       }
 
-      // 3. Fallback to stride keyframe
-      const strideIdx = Math.round(idx / 4) * 4;
-      if (strideIdx >= 0 && strideIdx < totalFrames && frames[strideIdx]?.complete && frames[strideIdx]?.naturalWidth) {
-        return frames[strideIdx];
+      // 3. Fallback to keyframe stride
+      const strideNum = Math.round(frameNum / 5) * 5;
+      const strideImg = globalFramesCache.get(strideNum);
+      if (strideImg && strideImg.complete && strideImg.naturalWidth > 0) {
+        return strideImg;
       }
 
-      // 4. Fallback to first loaded frame
-      return frames[0] || null;
+      // 4. Default to frame 1
+      const f1 = globalFramesCache.get(1);
+      if (f1 && f1.complete && f1.naturalWidth > 0) {
+        return f1;
+      }
+
+      return null;
     },
     [totalFrames]
   );
 
   return {
     isReady,
-    progress,
-    loadedCount,
     totalFrames,
     getNearestFrame,
     requestPriorityFrame,

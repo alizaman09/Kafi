@@ -59,7 +59,7 @@ export default function FooterSection({
 
       {/* 2. Footer Container — Dark Theme: Deep Espresso Brown #1A120B with Warm Beige/Gold Accents */}
       <div
-        className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB]"
+        className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB] pointer-events-auto"
       >
 
         {/* Subtle Ambient Gold Gradient Line on top */}
