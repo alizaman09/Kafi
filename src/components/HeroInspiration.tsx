@@ -66,24 +66,18 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
     }
   };
 
-  // Completely smooth, fluid easing curve without jerky jumps or elastic bounce
-  const progressRatio = Math.max(0, Math.min(1, scrollProgress / 0.22));
-  const smoothProgress = progressRatio * progressRatio * (3 - 2 * progressRatio);
-  const heroOpacity = Math.max(0, Math.min(1, 1 - smoothProgress));
-
-  if (heroOpacity <= 0.005) return null;
-
   return (
-    <div
-      style={{
-        opacity: heroOpacity,
-        pointerEvents: heroOpacity > 0.3 ? 'auto' : 'none',
-        willChange: 'opacity',
-      }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 h-[100dvh] max-h-[100dvh] w-full overflow-hidden no-scrollbar"
+    <section
+      id="hero-section"
+      className="relative z-10 w-full min-h-[100dvh] flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-4 sm:pb-6 overflow-hidden select-none bg-[#1A100B]"
     >
-      {/* Translucent Warm Coffee Ambient Veil (#6E4E37) — Light so background animation remains visible */}
-      <div className="fixed inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[2px]" />
+      {/* Background Cafe Image & Warm Coffee Ambient Veil */}
+      <img
+        src="/frames/ezgif-frame-001.png"
+        alt="KAFI Gulberg Exterior"
+        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
+      />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/55 via-[#6E4E37]/40 to-[#1A100B]/80 backdrop-blur-[1px] -z-10" />
 
       {/* =========================================================================
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
@@ -210,8 +204,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 {/* 3. Details */}
                 <button
                   onClick={() => {
-                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                    window.scrollTo({ top: maxScroll, behavior: 'smooth' });
+                    const el = document.getElementById('footer-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
                     setIsMobileMenuOpen(false);
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
@@ -429,7 +423,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
 
       </div>
 
-    </div>
+    </section>
   );
 };
 

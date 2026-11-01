@@ -3,44 +3,27 @@ import { motion } from 'framer-motion';
 import { Coffee, MapPin, Phone, Clock, Globe, ArrowUp } from 'lucide-react';
 
 export default function FooterSection({
-  scrollProgress = 0,
   onOpenMenu,
   onOpenCart,
 }) {
-  // Section 3 Entrance Curve with smooth cubic Hermite easing (Pure opacity fade, zero y-axis shifting)
-  let opacity = 0;
-
-  if (scrollProgress >= 0.72) {
-    const t = Math.min(1, (scrollProgress - 0.72) / 0.12);
-    opacity = t * t * (3 - 2 * t);
-  }
-
-  const isVisible = opacity > 0.02;
-  const isInteractive = opacity > 0.4;
-
-  if (!isVisible) return null;
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollToSection2 = () => {
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    if (maxScroll > 0) {
-      window.scrollTo({ top: maxScroll * 0.42, behavior: 'smooth' });
+  const scrollToMenu = () => {
+    const el = document.getElementById('menu-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
-    <div
-      style={{
-        opacity,
-        willChange: 'opacity',
-      }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-3 sm:pt-6 md:pt-8 h-[100dvh] max-h-[100dvh] overflow-hidden transition-opacity duration-200 no-scrollbar select-none"
+    <footer
+      id="footer-section"
+      className="relative z-10 w-full bg-[#1A120B] text-[#F5F2EB] flex flex-col justify-between pt-10 sm:pt-16 pb-8 select-none"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center select-none pointer-events-none py-3 sm:py-6">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center py-6 sm:py-10">
         <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-[#1A120B]/85 border border-[#EAD18D]/40 text-[#EAD18D] text-[9px] xs:text-[10px] sm:text-xs font-mono font-black tracking-widest uppercase backdrop-blur-md mb-2 sm:mb-3 shadow-lg">
           <Coffee className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#EAD18D]" />
           <span>Specialty Roastery & Coffee Lab</span>
@@ -60,9 +43,8 @@ export default function FooterSection({
       </div>
 
       {/* 2. Footer Container — Dark Theme: Deep Espresso Brown #1A120B with Warm Beige/Gold Accents */}
-      <footer
-        style={{ touchAction: 'pan-y' }}
-        className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 backdrop-blur-md border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB] pointer-events-auto"
+      <div
+        className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB]"
       >
 
         {/* Subtle Ambient Gold Gradient Line on top */}
@@ -129,7 +111,7 @@ export default function FooterSection({
                 </li>
                 <li>
                   <button
-                    onClick={scrollToSection2}
+                    onClick={scrollToMenu}
                     className="text-[#DCD3C0] hover:text-[#EAD18D] hover:translate-x-1 transition-all duration-150 flex items-center gap-1.5 group"
                   >
                     <span className="text-[#EAD18D]/50 group-hover:text-[#EAD18D]">›</span>
@@ -147,7 +129,7 @@ export default function FooterSection({
                 </li>
                 <li>
                   <button
-                    onClick={scrollToSection2}
+                    onClick={scrollToMenu}
                     className="text-[#DCD3C0] hover:text-[#EAD18D] hover:translate-x-1 transition-all duration-150 flex items-center gap-1.5 group"
                   >
                     <span className="text-[#EAD18D]/50 group-hover:text-[#EAD18D]">›</span>
@@ -302,8 +284,8 @@ export default function FooterSection({
           </div>
 
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 }
 

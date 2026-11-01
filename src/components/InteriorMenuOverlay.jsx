@@ -85,7 +85,6 @@ const COFFEE_MENU_ITEMS = [
 ];
 
 export default function InteriorMenuOverlay({
-  scrollProgress = 0,
   cart = {},
   onAddToCart,
   onOpenCart,
@@ -99,8 +98,6 @@ export default function InteriorMenuOverlay({
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           const mapped = data.map((p) => {
-            // Requirement 1, 4, 5, 6, 7, 8:
-            // Use exact uploaded image saved in database. Do not replace with random or stock images.
             const exactImg = (p.images && Array.isArray(p.images) && p.images.length > 0 && p.images[0])
               ? p.images[0]
               : null;
@@ -119,26 +116,6 @@ export default function InteriorMenuOverlay({
       .catch(() => { });
   }, []);
 
-  // Entrance & Exit curves with smooth cubic Hermite easing (zero jerky jumps)
-  let opacity = 0;
-
-  if (scrollProgress >= 0.20 && scrollProgress <= 0.78) {
-    if (scrollProgress < 0.32) {
-      const t = Math.max(0, Math.min(1, (scrollProgress - 0.20) / (0.32 - 0.20)));
-      opacity = t * t * (3 - 2 * t);
-    } else if (scrollProgress > 0.66) {
-      const t = Math.max(0, Math.min(1, (scrollProgress - 0.66) / (0.78 - 0.66)));
-      opacity = 1 - t * t * (3 - 2 * t);
-    } else {
-      opacity = 1;
-    }
-  }
-
-  const isVisible = opacity > 0.01;
-  const isInteractive = opacity > 0.35;
-
-  if (!isVisible) return null;
-
   const handleToggle = (item) => {
     if (onAddToCart) {
       onAddToCart(item);
@@ -150,26 +127,25 @@ export default function InteriorMenuOverlay({
   const totalPrice = cartItems.reduce((sum, it) => sum + (it.numericPrice || 150) * (it.quantity || 1), 0);
 
   return (
-    <div
-      style={{
-        opacity,
-        willChange: 'opacity',
-      }}
-      className="fixed inset-0 z-30 pointer-events-none flex items-center justify-center p-2 sm:p-4 pb-4 sm:pb-6 h-[100dvh] max-h-[100dvh] transition-opacity duration-200 overflow-hidden select-none"
+    <section
+      id="menu-section"
+      className="relative z-10 w-full min-h-screen py-12 sm:py-16 md:py-24 px-2 sm:px-4 md:px-6 bg-[#160E0A] flex flex-col items-center justify-center text-[#EDE4D8] select-none"
     >
-      {/* 1. Strong Dark Ambient Backdrop so cafe interior doesn't clash with menu text */}
-      <div className="fixed inset-0 pointer-events-none bg-black/75 backdrop-blur-md transition-opacity duration-300" />
+      {/* Background Soft Glow */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#1A100B] via-[#160E0A] to-[#120B08]" />
 
-      {/* 2. Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
+      {/* Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
       <div
-        style={{ touchAction: 'pan-y' }}
-        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08]/95 sm:bg-[#180E09]/95 border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-2.5 xs:p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-xl pointer-events-auto"
+        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08] sm:bg-[#180E09] border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
       >
         {/* Sleek Compact Header */}
-        <div className="text-center mb-2 xs:mb-2.5 sm:mb-4 shrink-0">
-          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-0.5 sm:py-1 rounded-full bg-[#2A1810] border border-[#EAD18D]/50 text-[#EAD18D] text-[8.5px] xs:text-[9.5px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md">
+        <div className="text-center mb-3 sm:mb-5 shrink-0">
+          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-[#2A1810] border border-[#EAD18D]/50 text-[#EAD18D] text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md">
             ★ KAFI GULBERG • SPECIALTY COFFEE MENU ★
           </span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black text-white mt-2 drop-shadow-md">
+            Artisanal Espresso & Handcrafted Brews
+          </h2>
         </div>
 
         {/* 3-Column Grid of Solid, High-Contrast Product Cards */}
@@ -179,7 +155,6 @@ export default function InteriorMenuOverlay({
             return (
               <div
                 key={item.id}
-                style={{ touchAction: 'pan-y' }}
                 className="group relative bg-[#24150E] hover:bg-[#2C1B12] border border-[#EAD18D]/20 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-1.5 xs:p-2 sm:p-2.5 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_8px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_12px_28px_rgba(234,209,141,0.2)] transition-all duration-200"
               >
                 {/* Centered Product Image Container */}
@@ -248,10 +223,8 @@ export default function InteriorMenuOverlay({
 
         {/* Floating Cart Bar inside Panel when items are selected */}
         {totalCount > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-2.5 sm:mt-3.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#2A1810] border border-[#EAD18D]/50 shadow-[0_10px_25px_rgba(0,0,0,0.6)] flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold text-white shrink-0"
+          <div
+            className="mt-3.5 px-3 sm:px-4 py-1.5 rounded-full bg-[#2A1810] border border-[#EAD18D]/50 shadow-[0_10px_25px_rgba(0,0,0,0.6)] flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold text-white shrink-0 transition-all duration-300"
           >
             <div className="flex items-center gap-1 sm:gap-1.5">
               <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#EAD18D]" />
@@ -266,9 +239,9 @@ export default function InteriorMenuOverlay({
               <ShoppingCart className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" />
               <span>Checkout</span>
             </button>
-          </motion.div>
+          </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }
