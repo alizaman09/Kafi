@@ -207,18 +207,29 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
   }, [isReady, lerpFactor, renderFrame]);
 
   return (
-    <div className="fixed inset-0 w-full h-full min-h-[100dvh] overflow-hidden pointer-events-none -z-10">
-      {/* Permanent Fallback: Frame 1 is permanently behind canvas so the screen NEVER flashes black */}
-      <img
-        src="/frames/ezgif-frame-001.png"
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
-      />
-      <canvas
-        ref={canvasRef}
-        className="block h-full w-full object-cover pointer-events-none select-none relative z-0"
-      />
+    <div
+      ref={containerRef}
+      className="relative h-[600vh] w-full bg-[#1A100B]"
+      style={{ overscrollBehaviorY: 'none' }}
+    >
+      {/* 
+        FIXED FULLSCREEN VIEWPORT:
+        Fixed inset-0 pins the canvas directly to the screen at all times.
+        Guarantees zero black borders, zero gap when starting to scroll.
+      */}
+      <div className="fixed inset-0 w-full h-full min-h-[100dvh] overflow-hidden pointer-events-none">
+        {/* Permanent Fallback: Frame 1 is permanently behind canvas so the screen NEVER flashes black */}
+        <img
+          src="/frames/ezgif-frame-001.png"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
+        />
+        <canvas
+          ref={canvasRef}
+          className="block h-full w-full object-cover pointer-events-none select-none relative z-0"
+        />
+      </div>
     </div>
   );
 };

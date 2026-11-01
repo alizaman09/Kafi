@@ -2,24 +2,40 @@ import React from 'react';
 import { Coffee, MapPin, Phone, Clock, Globe, ArrowUp } from 'lucide-react';
 
 export default function FooterSection({
+  scrollProgress = 0,
   onOpenMenu,
   onOpenCart,
 }) {
+  let opacity = 0;
+
+  if (scrollProgress >= 0.72) {
+    const t = Math.min(1, (scrollProgress - 0.72) / 0.12);
+    opacity = t * t * (3 - 2 * t);
+  }
+
+  const isVisible = opacity > 0.02;
+  const isInteractive = opacity > 0.4;
+
+  if (!isVisible) return null;
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollToMenu = () => {
-    const el = document.getElementById('menu-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSection2 = () => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll > 0) {
+      window.scrollTo({ top: maxScroll * 0.38, behavior: 'smooth' });
     }
   };
 
   return (
-    <footer
-      id="footer-section"
-      className="relative z-10 w-full bg-[#1A120B] text-[#F5F2EB] flex flex-col justify-between pt-10 sm:pt-16 pb-8 select-none"
+    <div
+      style={{
+        opacity,
+        willChange: 'opacity',
+      }}
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-3 sm:pt-6 md:pt-8 h-[100dvh] max-h-[100dvh] overflow-hidden transition-opacity duration-200 no-scrollbar select-none"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center py-6 sm:py-10">
@@ -110,7 +126,7 @@ export default function FooterSection({
                 </li>
                 <li>
                   <button
-                    onClick={scrollToMenu}
+                    onClick={scrollToSection2}
                     className="text-[#DCD3C0] hover:text-[#EAD18D] hover:translate-x-1 transition-all duration-150 flex items-center gap-1.5 group"
                   >
                     <span className="text-[#EAD18D]/50 group-hover:text-[#EAD18D]">›</span>
@@ -128,7 +144,7 @@ export default function FooterSection({
                 </li>
                 <li>
                   <button
-                    onClick={scrollToMenu}
+                    onClick={scrollToSection2}
                     className="text-[#DCD3C0] hover:text-[#EAD18D] hover:translate-x-1 transition-all duration-150 flex items-center gap-1.5 group"
                   >
                     <span className="text-[#EAD18D]/50 group-hover:text-[#EAD18D]">›</span>
@@ -284,7 +300,7 @@ export default function FooterSection({
 
         </div>
       </div>
-    </footer>
+    </div>
   );
 }
 

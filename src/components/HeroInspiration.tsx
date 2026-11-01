@@ -65,18 +65,24 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
     }
   };
 
+  // Fluid easing curve without jerky jumps
+  const progressRatio = Math.max(0, Math.min(1, scrollProgress / 0.22));
+  const smoothProgress = progressRatio * progressRatio * (3 - 2 * progressRatio);
+  const heroOpacity = Math.max(0, Math.min(1, 1 - smoothProgress));
+
+  if (heroOpacity <= 0.005) return null;
+
   return (
-    <section
-      id="hero-section"
-      className="relative z-10 w-full min-h-[100dvh] flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-4 sm:pb-6 overflow-hidden select-none bg-[#1A100B]"
+    <div
+      style={{
+        opacity: heroOpacity,
+        pointerEvents: heroOpacity > 0.3 ? 'auto' : 'none',
+        willChange: 'opacity',
+      }}
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 h-[100dvh] max-h-[100dvh] w-full overflow-hidden no-scrollbar"
     >
-      {/* High-Resolution Cafe Background Image & Warm Ambient Veil */}
-      <img
-        src="/frames/ezgif-frame-001.png"
-        alt="KAFI Gulberg Exterior"
-        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
-      />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/50 via-[#6E4E37]/30 to-[#1A100B]/80 -z-10" />
+      {/* Translucent Warm Coffee Ambient Veil allowing background animation to show */}
+      <div className="fixed inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[1px]" />
 
       {/* =========================================================================
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
@@ -416,7 +422,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
 
       </div>
 
-    </section>
+    </div>
   );
 };
 

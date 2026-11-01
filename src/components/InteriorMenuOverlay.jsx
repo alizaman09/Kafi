@@ -84,6 +84,7 @@ const COFFEE_MENU_ITEMS = [
 ];
 
 export default function InteriorMenuOverlay({
+  scrollProgress = 0,
   cart = {},
   onAddToCart,
   onOpenCart,
@@ -115,6 +116,26 @@ export default function InteriorMenuOverlay({
       .catch(() => { });
   }, []);
 
+  // Entrance & Exit curves with smooth cubic Hermite easing (zero jerky jumps)
+  let opacity = 0;
+
+  if (scrollProgress >= 0.20 && scrollProgress <= 0.78) {
+    if (scrollProgress < 0.32) {
+      const t = Math.max(0, Math.min(1, (scrollProgress - 0.20) / (0.32 - 0.20)));
+      opacity = t * t * (3 - 2 * t);
+    } else if (scrollProgress > 0.66) {
+      const t = Math.max(0, Math.min(1, (scrollProgress - 0.66) / (0.78 - 0.66)));
+      opacity = 1 - t * t * (3 - 2 * t);
+    } else {
+      opacity = 1;
+    }
+  }
+
+  const isVisible = opacity > 0.01;
+  const isInteractive = opacity > 0.35;
+
+  if (!isVisible) return null;
+
   const handleToggle = (item) => {
     if (onAddToCart) {
       onAddToCart(item);
@@ -126,16 +147,20 @@ export default function InteriorMenuOverlay({
   const totalPrice = cartItems.reduce((sum, it) => sum + (it.numericPrice || 150) * (it.quantity || 1), 0);
 
   return (
-    <section
-      id="menu-section"
-      className="relative z-10 w-full min-h-screen py-12 sm:py-16 md:py-24 px-2 sm:px-4 md:px-6 bg-[#160E0A] flex flex-col items-center justify-center text-[#EDE4D8] select-none"
+    <div
+      style={{
+        opacity,
+        willChange: 'opacity',
+      }}
+      className="fixed inset-0 z-30 pointer-events-none flex items-center justify-center p-2 sm:p-4 pb-4 sm:pb-6 h-[100dvh] max-h-[100dvh] transition-opacity duration-200 overflow-hidden select-none"
     >
-      {/* Deep Espresso Subtle Ambient Gradient */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#1A100B] via-[#160E0A] to-[#140C08]" />
+      {/* 1. Ambient Darkening Veil over video so interior remains visible around the menu */}
+      <div className="fixed inset-0 pointer-events-none bg-black/65 backdrop-blur-[1px] transition-opacity duration-300" />
 
-      {/* Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
+      {/* 2. Solid Dark Background Panel specifically behind the menu grid for 100% crystal-clear readability */}
       <div
-        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08]/95 sm:bg-[#180E09]/95 border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-xl"
+        style={{ touchAction: 'pan-y' }}
+        className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-[#140C08]/95 sm:bg-[#180E09]/95 border border-[#EAD18D]/35 rounded-2xl sm:rounded-3xl p-2.5 xs:p-3 sm:p-5 md:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-xl pointer-events-auto"
       >
         {/* Sleek Compact Header */}
         <div className="text-center mb-3 sm:mb-5 shrink-0">
@@ -241,6 +266,6 @@ export default function InteriorMenuOverlay({
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }
