@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import db, { initDatabase } from './db.js';
 
@@ -22,18 +23,38 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
+// Ensure persistent uploads directory exists
+const uploadsDir = path.join(__dirname, '../public/uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Multer storage for product image uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../public/uploads'));
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
+    const ext = path.extname(file.originalname).toLowerCase() || '.png';
     cb(null, 'prod-' + uniqueSuffix + ext);
   }
 });
-const upload = multer({ storage });
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max limit to preserve high quality
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files (JPEG, PNG, WebP, SVG, GIF) are allowed'));
+    }
+  }
+});
 
 // JWT Authentication Middleware for Protected Admin Routes
 function requireAdminAuth(req, res, next) {
@@ -147,16 +168,18 @@ app.get('/api/dashboard/stats', requireAdminAuth, (req, res) => {
 // -------------------------------------------------------------
 // 3. IMAGE UPLOAD
 // -------------------------------------------------------------
-app.post('/api/upload', requireAdminAuth, upload.array('images', 5), (req, res) => {
-  try {
+app.post('/api/upload', requireAdminAuth, (req, res) => {
+  upload.array('images', 5)(req, res, (err) => {
+    if (err) {
+      console.error('Upload processing error:', err.message);
+      return res.status(400).json({ error: err.message || 'Image upload failed' });
+    }
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded' });
+      return res.status(400).json({ error: 'No files were provided for upload' });
     }
     const urls = req.files.map(file => `/uploads/${file.filename}`);
-    res.json({ urls });
-  } catch (err) {
-    res.status(500).json({ error: 'File upload failed' });
-  }
+    res.json({ success: true, urls });
+  });
 });
 
 // -------------------------------------------------------------
@@ -303,13 +326,14 @@ app.post('/api/products', requireAdminAuth, (req, res) => {
     category_id, images, sizes, colors, variants, stock_quantity, is_featured
   } = req.body;
 
-  if (!name || regular_price === undefined || !sku) {
-    return res.status(400).json({ error: 'Name, SKU, and regular price are required' });
+  if (!name || regular_price === undefined || regular_price === '') {
+    return res.status(400).json({ error: 'Menu item name and price are required' });
   }
 
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  const stock = Number(stock_quantity) || 0;
-  const status = stock <= 0 ? 'out_of_stock' : (stock <= 10 ? 'low_stock' : 'in_stock');
+  const itemSku = (sku && sku.trim()) ? sku.trim().toUpperCase() : ('KF-' + Date.now().toString().slice(-6));
+  const stock = stock_quantity !== undefined && stock_quantity !== '' ? Number(stock_quantity) : 999;
+  const status = 'in_stock';
 
   try {
     const stmt = db.prepare(`
@@ -324,7 +348,7 @@ app.post('/api/products', requireAdminAuth, (req, res) => {
       name.trim(),
       slug,
       description || '',
-      sku.trim().toUpperCase(),
+      itemSku,
       Number(regular_price),
       sale_price ? Number(sale_price) : null,
       category_id ? Number(category_id) : null,
@@ -370,8 +394,8 @@ app.put('/api/products/:id', requireAdminAuth, (req, res) => {
   const current = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
   if (!current) return res.status(404).json({ error: 'Product not found' });
 
-  const stock = stock_quantity !== undefined ? Number(stock_quantity) : current.stock_quantity;
-  const status = stock <= 0 ? 'out_of_stock' : (stock <= 10 ? 'low_stock' : 'in_stock');
+  const stock = stock_quantity !== undefined && stock_quantity !== '' ? Number(stock_quantity) : (current.stock_quantity || 999);
+  const status = 'in_stock';
   const slug = name ? name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : current.slug;
 
   try {

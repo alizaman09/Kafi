@@ -15,7 +15,11 @@ import {
   UploadCloud,
   Star,
   Layers,
-  Tag
+  Tag,
+  Link2,
+  Smartphone,
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 
 export default function Products() {
@@ -38,25 +42,25 @@ export default function Products() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // Form State
+  // Form State (Simplified Cafe Menu Management)
   const [formData, setFormData] = useState({
     name: '',
-    sku: '',
     description: '',
     regular_price: '',
-    sale_price: '',
     category_id: '',
-    stock_quantity: '',
     is_featured: false,
-    images: [],
-    sizes: [],
-    colors: [],
-    variants: []
+    images: []
   });
+
+  // Dedicated Image Handling State (Option 1: Device Upload vs Option 2: Image URL)
+  const [imageMode, setImageMode] = useState('device'); // 'device' | 'url'
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [verifyingUrl, setVerifyingUrl] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [urlSuccess, setUrlSuccess] = useState('');
+  const [previewUrl, setPreviewUrl] = useState('');
   const [customImageUrl, setCustomImageUrl] = useState('');
-  const [sizeInput, setSizeInput] = useState('');
-  const [variantInput, setVariantInput] = useState({ name: '', price: '', stock: '' });
+  const [brokenThumbnails, setBrokenThumbnails] = useState({});
 
   // Open modal if ?new=true query param is present
   useEffect(() => {
@@ -78,7 +82,7 @@ export default function Products() {
       setProducts(prods);
       setCategories(cats);
     } catch (err) {
-      setError('Failed to fetch product catalog');
+      setError('Failed to fetch menu catalog');
     } finally {
       setLoading(false);
     }
@@ -90,130 +94,150 @@ export default function Products() {
 
   const openAddModal = () => {
     setEditingProduct(null);
+    setUploadError('');
+    setUrlSuccess('');
+    setPreviewUrl('');
+    setCustomImageUrl('');
+    setImageMode('device');
     setFormData({
       name: '',
-      sku: 'KF-' + Math.floor(100 + Math.random() * 900),
       description: '',
       regular_price: '',
-      sale_price: '',
       category_id: categories[0]?.id || '',
-      stock_quantity: '20',
       is_featured: false,
-      images: [],
-      sizes: ['Regular', 'Large'],
-      colors: [],
-      variants: []
+      images: []
     });
     setIsModalOpen(true);
   };
 
   const openEditModal = (product) => {
     setEditingProduct(product);
+    setUploadError('');
+    setUrlSuccess('');
+    const existingImg = product.images && product.images.length > 0 ? product.images[0] : '';
+    setPreviewUrl(existingImg);
+    if (existingImg.startsWith('http://') || existingImg.startsWith('https://')) {
+      setImageMode('url');
+      setCustomImageUrl(existingImg);
+    } else {
+      setImageMode('device');
+      setCustomImageUrl('');
+    }
     setFormData({
       name: product.name,
-      sku: product.sku,
       description: product.description || '',
       regular_price: product.regular_price,
-      sale_price: product.sale_price || '',
       category_id: product.category_id || '',
-      stock_quantity: product.stock_quantity,
       is_featured: Boolean(product.is_featured),
-      images: product.images || [],
-      sizes: product.sizes || [],
-      colors: product.colors || [],
-      variants: product.variants || []
+      images: product.images || []
     });
     setIsModalOpen(true);
   };
 
+  // OPTION 1: UPLOAD FROM DEVICE
   const handleImageFileUpload = async (e) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
 
-    const data = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      data.append('images', files[i]);
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/gif', 'image/svg+xml'];
+    if (!validTypes.includes(file.type.toLowerCase()) && !file.name.match(/\.(jpg|jpeg|png|webp|svg|gif)$/i)) {
+      setUploadError('Invalid file format: Please select a valid JPG, JPEG, PNG, or WEBP image.');
+      return;
     }
 
+    setUploadError('');
+    setUrlSuccess('');
+    setUploadingImage(true);
+
+    // Instant local preview for immediate visual feedback
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+
+    const data = new FormData();
+    data.append('images', file);
+
     try {
-      setUploadingImage(true);
       const res = await authFetch('/api/upload', {
         method: 'POST',
         body: data
       });
       const result = await res.json();
-      if (result.urls) {
+      if (!res.ok) {
+        throw new Error(result.error || 'Server failed to save uploaded image');
+      }
+
+      if (result.urls && result.urls.length > 0) {
+        const storedUrl = result.urls[0];
+        // Save exact persistent storage URL
         setFormData(prev => ({
           ...prev,
-          images: [...prev.images, ...result.urls]
+          images: [storedUrl]
         }));
+        setPreviewUrl(storedUrl);
+        setUrlSuccess('Device image uploaded and stored permanently!');
       }
     } catch (err) {
-      alert('Image upload failed: ' + err.message);
+      setUploadError(err.message || 'Image upload failed. Please try another image.');
+      setPreviewUrl('');
     } finally {
       setUploadingImage(false);
+      e.target.value = '';
     }
   };
 
-  const handleAddImageUrl = () => {
-    if (!customImageUrl.trim()) return;
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, customImageUrl.trim()]
-    }));
-    setCustomImageUrl('');
-  };
+  // OPTION 2: DIRECT IMAGE URL VERIFICATION & ATTACHMENT
+  const handleVerifyAndSetUrl = () => {
+    const raw = customImageUrl.trim();
+    if (!raw) {
+      setUploadError('Please paste or enter an image URL.');
+      return;
+    }
 
-  const handleRemoveImage = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-  };
+    // Require valid URL or root-relative path
+    if (!raw.startsWith('http://') && !raw.startsWith('https://') && !raw.startsWith('/') && !raw.startsWith('data:')) {
+      setUploadError('Please enter a valid URL starting with https://, http://, or /assets/...');
+      return;
+    }
 
-  const handleAddSize = () => {
-    if (!sizeInput.trim()) return;
-    if (!formData.sizes.includes(sizeInput.trim())) {
+    setVerifyingUrl(true);
+    setUploadError('');
+    setUrlSuccess('');
+
+    // Pre-load image to verify accessibility
+    const testImg = new Image();
+    testImg.onload = () => {
+      setVerifyingUrl(false);
       setFormData(prev => ({
         ...prev,
-        sizes: [...prev.sizes, sizeInput.trim()]
+        images: [raw]
       }));
-    }
-    setSizeInput('');
+      setPreviewUrl(raw);
+      setUrlSuccess('Image URL verified and applied successfully!');
+    };
+    testImg.onerror = () => {
+      setVerifyingUrl(false);
+      setUploadError('Failed to load image from URL. Please ensure it is a direct image link (PNG, JPG, WebP) and publicly accessible.');
+    };
+    testImg.src = raw;
   };
 
-  const handleRemoveSize = (size) => {
+  const handleRemoveImage = () => {
     setFormData(prev => ({
       ...prev,
-      sizes: prev.sizes.filter(s => s !== size)
+      images: []
     }));
-  };
-
-  const handleAddVariant = () => {
-    if (!variantInput.name.trim() || !variantInput.price) return;
-    setFormData(prev => ({
-      ...prev,
-      variants: [
-        ...prev.variants,
-        {
-          name: variantInput.name.trim(),
-          price: Number(variantInput.price),
-          stock: Number(variantInput.stock || 0)
-        }
-      ]
-    }));
-    setVariantInput({ name: '', price: '', stock: '' });
-  };
-
-  const handleRemoveVariant = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      variants: prev.variants.filter((_, i) => i !== index)
-    }));
+    setPreviewUrl('');
+    setCustomImageUrl('');
+    setUploadError('');
+    setUrlSuccess('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.name.trim() || formData.regular_price === '') {
+      alert('Please provide menu item name and regular price.');
+      return;
+    }
     try {
       const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
       const method = editingProduct ? 'PUT' : 'POST';
@@ -221,18 +245,19 @@ export default function Products() {
       const res = await authFetch(url, {
         method,
         body: JSON.stringify({
-          ...formData,
+          name: formData.name.trim(),
+          description: formData.description.trim(),
           regular_price: Number(formData.regular_price),
-          sale_price: formData.sale_price ? Number(formData.sale_price) : null,
           category_id: formData.category_id ? Number(formData.category_id) : null,
-          stock_quantity: Number(formData.stock_quantity),
-          is_featured: formData.is_featured ? 1 : 0
+          is_featured: formData.is_featured ? 1 : 0,
+          images: formData.images,
+          stock_quantity: 999
         })
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to save product');
+        throw new Error(errorData.error || 'Failed to save menu item');
       }
 
       setIsModalOpen(false);
@@ -245,7 +270,7 @@ export default function Products() {
   const handleDelete = async (id) => {
     try {
       const res = await authFetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete product');
+      if (!res.ok) throw new Error('Failed to delete menu item');
       setDeleteConfirmId(null);
       loadData();
     } catch (err) {
@@ -258,14 +283,12 @@ export default function Products() {
     const matchesSearch =
       search === '' ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase());
+      (p.description && p.description.toLowerCase().includes(search.toLowerCase()));
     const matchesCategory = selectedCategory === '' || String(p.category_id) === String(selectedCategory);
-    const matchesStatus = selectedStatus === '' || p.status === selectedStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
+    return matchesSearch && matchesCategory;
   }).sort((a, b) => {
     if (sortOrder === 'price_asc') return a.regular_price - b.regular_price;
     if (sortOrder === 'price_desc') return b.regular_price - a.regular_price;
-    if (sortOrder === 'stock_asc') return a.stock_quantity - b.stock_quantity;
     if (sortOrder === 'name') return a.name.localeCompare(b.name);
     return b.id - a.id;
   });
@@ -275,26 +298,26 @@ export default function Products() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-[#F2E4D5]">Product Catalog</h1>
-          <p className="text-xs text-[#917765]">Manage physical coffee beans, brews, pastries and custom options.</p>
+          <h1 className="text-2xl font-serif font-bold text-[#F2E4D5]">Cafe Menu Catalog</h1>
+          <p className="text-xs text-[#917765]">Manage coffees, brews, pastries and cafe items displayed on your website.</p>
         </div>
         <button
           onClick={openAddModal}
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#6E4E37] to-[#8C5D3B] hover:from-[#7D593E] hover:to-[#9D6A44] text-white text-xs font-semibold shadow-lg shadow-[#6E4E37]/30 flex items-center space-x-2 transition-all self-start sm:self-auto"
         >
           <Plus size={16} />
-          <span>Add New Product</span>
+          <span>Add New Menu Item</span>
         </button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-[#160E0A] border border-[#2B1B13] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="p-4 rounded-2xl bg-[#160E0A] border border-[#2B1B13] grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Search */}
         <div className="relative">
           <Search size={15} className="absolute left-3.5 top-3 text-[#7A6150]" />
           <input
             type="text"
-            placeholder="Search by name or SKU..."
+            placeholder="Search menu items..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 bg-[#1F1510] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] placeholder-[#7A6150] focus:outline-none focus:border-[#C49A6C]"
@@ -313,18 +336,6 @@ export default function Products() {
           ))}
         </select>
 
-        {/* Status */}
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="w-full px-3 py-2 bg-[#1F1510] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
-        >
-          <option value="">All Stock Statuses</option>
-          <option value="in_stock">In Stock (&gt;10)</option>
-          <option value="low_stock">Low Stock (≤10)</option>
-          <option value="out_of_stock">Out of Stock (0)</option>
-        </select>
-
         {/* Sort */}
         <select
           value={sortOrder}
@@ -334,7 +345,6 @@ export default function Products() {
           <option value="">Sort: Newest First</option>
           <option value="price_asc">Price: Low to High</option>
           <option value="price_desc">Price: High to Low</option>
-          <option value="stock_asc">Stock: Lowest First</option>
           <option value="name">Name: A to Z</option>
         </select>
       </div>
@@ -346,10 +356,8 @@ export default function Products() {
             <thead>
               <tr className="border-b border-[#2B1B13] text-[#8C705E] uppercase tracking-wider font-semibold bg-[#1A110C]">
                 <th className="py-3 px-4">Item</th>
-                <th className="py-3 px-4">SKU</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Stock</th>
                 <th className="py-3 px-4">Featured</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
@@ -357,15 +365,15 @@ export default function Products() {
             <tbody className="divide-y divide-[#221610]">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-[#8C705E]">
+                  <td colSpan={5} className="py-12 text-center text-[#8C705E]">
                     <div className="w-8 h-8 mx-auto border-2 border-[#6E4E37] border-t-[#C49A6C] rounded-full animate-spin mb-2" />
-                    <span>Loading products...</span>
+                    <span>Loading menu items...</span>
                   </td>
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-[#735A4A]">
-                    No products found matching your criteria.
+                  <td colSpan={5} className="py-12 text-center text-[#735A4A]">
+                    No menu items found.
                   </td>
                 </tr>
               ) : (
@@ -375,61 +383,32 @@ export default function Products() {
                     <tr key={p.id} className="hover:bg-[#1C120B]/60 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 rounded-lg bg-[#241710] border border-[#3A2417] flex items-center justify-center overflow-hidden flex-shrink-0">
-                            {firstImage ? (
+                          <div className="w-12 h-12 rounded-xl bg-[#241710] border border-[#3A2417] flex items-center justify-center overflow-hidden flex-shrink-0 p-1 shadow-inner">
+                            {firstImage && !brokenThumbnails[p.id] ? (
                               <img
                                 src={firstImage}
                                 alt={p.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                }}
+                                onError={() => setBrokenThumbnails(prev => ({ ...prev, [p.id]: true }))}
+                                className="max-h-full max-w-full object-contain"
                               />
                             ) : (
-                              <Coffee size={18} className="text-[#8C6D53]" />
+                              <Coffee size={20} className="text-[#8C6D53]" />
                             )}
                           </div>
                           <div>
                             <p className="font-semibold text-[#EDE0D4]">{p.name}</p>
-                            <p className="text-[10px] text-[#856D5B] line-clamp-1 max-w-[200px]">
+                            <p className="text-[10px] text-[#856D5B] line-clamp-1 max-w-[220px]">
                               {p.description || 'No description'}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-[#D4A373]">
-                        {p.sku}
-                      </td>
                       <td className="py-3.5 px-4 text-[#A89281]">
                         {p.category_name || 'Uncategorized'}
                       </td>
                       <td className="py-3.5 px-4">
-                        {p.sale_price ? (
-                          <div>
-                            <span className="font-semibold text-emerald-400">
-                              PKR {p.sale_price}
-                            </span>
-                            <span className="text-[10px] text-[#786151] line-through ml-1.5">
-                              {p.regular_price}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="font-semibold text-[#EDE0D4]">
-                            PKR {p.regular_price}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
-                            p.stock_quantity <= 0
-                              ? 'bg-red-950/80 text-red-300 border-red-800'
-                              : p.stock_quantity <= 10
-                              ? 'bg-amber-950/80 text-amber-300 border-amber-800'
-                              : 'bg-emerald-950/80 text-emerald-300 border-emerald-800'
-                          }`}
-                        >
-                          {p.stock_quantity} in stock
+                        <span className="font-semibold text-emerald-400">
+                          PKR {p.regular_price}
                         </span>
                       </td>
                       <td className="py-3.5 px-4">
@@ -446,14 +425,14 @@ export default function Products() {
                         <div className="flex items-center justify-end space-x-2">
                           <button
                             onClick={() => openEditModal(p)}
-                            title="Edit Product"
+                            title="Edit Menu Item"
                             className="p-1.5 rounded-lg bg-[#221610] hover:bg-[#2C1D15] text-[#C49A6C] hover:text-[#E8C49F] border border-[#3A2418] transition-colors"
                           >
                             <Edit2 size={13} />
                           </button>
                           <button
                             onClick={() => setDeleteConfirmId(p.id)}
-                            title="Delete Product"
+                            title="Delete Menu Item"
                             className="p-1.5 rounded-lg bg-[#221610] hover:bg-red-950/60 text-[#8C6D53] hover:text-red-400 border border-[#3A2418] hover:border-red-800 transition-colors"
                           >
                             <Trash2 size={13} />
@@ -508,7 +487,7 @@ export default function Products() {
             <div className="px-6 py-4 border-b border-[#281A12] flex items-center justify-between">
               <div>
                 <h2 className="text-base font-serif font-bold text-[#F2E4D5]">
-                  {editingProduct ? 'Edit Coffee Product' : 'Add New Physical Product'}
+                  {editingProduct ? 'Edit Menu Item' : 'Add New Menu Item'}
                 </h2>
                 <p className="text-[11px] text-[#8C705E]">
                   Updates reflect instantly on the KAFI storefront menu & scrollytelling.
@@ -522,56 +501,39 @@ export default function Products() {
               </button>
             </div>
 
-            {/* Form Body */}
+            {/* Form Body - Simplified for Cafe Menu */}
             <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Product Name */}
-                <div>
-                  <label className="block text-xs font-medium text-[#A68C7A] mb-1">
-                    Product Title *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Spanish Latte"
-                    className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
-                  />
-                </div>
-
-                {/* SKU */}
-                <div>
-                  <label className="block text-xs font-medium text-[#A68C7A] mb-1">
-                    SKU Code *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.sku}
-                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                    placeholder="e.g. KF-LAT-001"
-                    className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C] font-mono"
-                  />
-                </div>
+              {/* Product Name */}
+              <div>
+                <label className="block text-xs font-medium text-[#A68C7A] mb-1">
+                  Menu Item Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Spanish Latte, Butter Almond Croissant"
+                  className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
+                />
               </div>
 
               {/* Description */}
               <div>
                 <label className="block text-xs font-medium text-[#A68C7A] mb-1">
-                  Product Description
+                  Description / Tasting Notes
                 </label>
                 <textarea
                   rows={2}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Artisanal notes, origins, flavor profile..."
+                  placeholder="Artisanal notes, flavor profile, ingredients..."
                   className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
                 />
               </div>
 
-              {/* Pricing & Stock */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Regular Price & Category */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-[#A68C7A] mb-1">
                     Regular Price (PKR) *
@@ -579,41 +541,15 @@ export default function Products() {
                   <input
                     type="number"
                     required
+                    min="0"
+                    step="1"
                     value={formData.regular_price}
                     onChange={(e) => setFormData({ ...formData, regular_price: e.target.value })}
                     placeholder="750"
                     className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#A68C7A] mb-1">
-                    Sale Price (Optional)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.sale_price}
-                    onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
-                    placeholder="699"
-                    className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#A68C7A] mb-1">
-                    Stock Quantity *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.stock_quantity}
-                    onChange={(e) => setFormData({ ...formData, stock_quantity: e.target.value })}
-                    placeholder="25"
-                    className="w-full px-3 py-2 bg-[#1E140E] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
-                  />
-                </div>
-              </div>
 
-              {/* Category & Featured */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                 <div>
                   <label className="block text-xs font-medium text-[#A68C7A] mb-1">
                     Category
@@ -629,115 +565,228 @@ export default function Products() {
                     ))}
                   </select>
                 </div>
-                <div className="pt-5">
-                  <label className="flex items-center space-x-2.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_featured}
-                      onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-                      className="w-4 h-4 rounded text-[#C49A6C] focus:ring-[#C49A6C] bg-[#1E140E] border-[#3A251A]"
-                    />
-                    <span className="text-xs text-[#EDE0D4] font-medium">
-                      Feature on Storefront Homepage
-                    </span>
-                  </label>
-                </div>
               </div>
 
-              {/* Images Section */}
-              <div className="p-3.5 rounded-xl bg-[#1A110C] border border-[#2B1B13] space-y-3">
-                <label className="block text-xs font-semibold text-[#D4A373]">
-                  Product Images
+              {/* Featured Checkbox */}
+              <div className="p-3 bg-[#1A110C] border border-[#2B1B13] rounded-xl">
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_featured}
+                    onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                    className="w-4 h-4 rounded text-[#C49A6C] focus:ring-[#C49A6C] bg-[#1E140E] border-[#3A251A]"
+                  />
+                  <span className="text-xs text-[#EDE0D4] font-medium">
+                    Feature on Storefront Homepage
+                  </span>
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {formData.images.map((img, idx) => (
-                    <div key={idx} className="relative w-14 h-14 rounded-lg bg-[#241710] border border-[#3A2417] overflow-hidden group">
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Two Options for Product Images: Upload from Device vs Direct URL */}
+              <div className="p-4 rounded-xl bg-[#1A110C] border border-[#2B1B13] space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#D4A373]">
+                      Product Image
+                    </label>
+                    <p className="text-[10px] text-[#8C705E]">
+                      Select how you want to add this product's image:
+                    </p>
+                  </div>
+                  {previewUrl && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-800 text-emerald-400 font-medium flex items-center gap-1">
+                      <Check size={10} /> Image Attached
+                    </span>
+                  )}
+                </div>
+
+                {/* Option Switcher Tabs */}
+                <div className="grid grid-cols-2 gap-2 bg-[#120B07] p-1 rounded-xl border border-[#2B1A12]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageMode('device');
+                      setUploadError('');
+                      setUrlSuccess('');
+                    }}
+                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${imageMode === 'device'
+                        ? 'bg-[#6E4E37] text-white shadow-md'
+                        : 'text-[#A68C7A] hover:text-[#EDE0D4] hover:bg-[#1E130D]'
+                      }`}
+                  >
+                    <UploadCloud size={14} className={imageMode === 'device' ? 'text-amber-200' : ''} />
+                    <span>Option 1: Upload from Device</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageMode('url');
+                      setUploadError('');
+                      setUrlSuccess('');
+                    }}
+                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${imageMode === 'url'
+                        ? 'bg-[#6E4E37] text-white shadow-md'
+                        : 'text-[#A68C7A] hover:text-[#EDE0D4] hover:bg-[#1E130D]'
+                      }`}
+                  >
+                    <Link2 size={14} className={imageMode === 'url' ? 'text-amber-200' : ''} />
+                    <span>Option 2: Image URL</span>
+                  </button>
+                </div>
+
+                {/* Feedback Alerts */}
+                {uploadError && (
+                  <div className="p-3 rounded-xl bg-red-950/70 border border-red-800 text-xs text-red-200 flex items-start space-x-2">
+                    <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
+                {urlSuccess && (
+                  <div className="p-3 rounded-xl bg-emerald-950/70 border border-emerald-800 text-xs text-emerald-200 flex items-start space-x-2">
+                    <Check size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{urlSuccess}</span>
+                  </div>
+                )}
+
+                {/* Option 1: Upload from Device */}
+                {imageMode === 'device' && (
+                  <div className="space-y-2">
+                    <label className="w-full h-32 rounded-xl border-2 border-dashed border-[#422C1E] hover:border-[#C49A6C] bg-[#140D09] hover:bg-[#19110B] flex flex-col items-center justify-center text-center p-4 cursor-pointer transition-all group">
+                      {uploadingImage ? (
+                        <div className="flex flex-col items-center space-y-2 text-xs text-[#C49A6C]">
+                          <div className="w-7 h-7 border-2 border-white/20 border-t-[#C49A6C] rounded-full animate-spin" />
+                          <span>Uploading image to persistent storage...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-10 h-10 rounded-full bg-[#241710] group-hover:bg-[#321F14] text-[#C49A6C] flex items-center justify-center mb-1.5 transition-colors">
+                            <UploadCloud size={20} />
+                          </div>
+                          <p className="text-xs font-semibold text-[#EDE0D4] group-hover:text-[#F5EAE0]">
+                            Choose image from Computer or Mobile device
+                          </p>
+                          <p className="text-[10px] text-[#8C705E] mt-0.5">
+                            Supports JPG, JPEG, PNG, WEBP (Saved directly in persistent storage)
+                          </p>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                        disabled={uploadingImage}
+                        onChange={handleImageFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
+
+                {/* Option 2: Image URL */}
+                {imageMode === 'url' && (
+                  <div className="space-y-2">
+                    <p className="text-[11px] text-[#A68C7A]">
+                      Enter a direct image URL from the web or an existing asset path:
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="url"
+                        placeholder="https://example.com/coffee.jpg or /assets/cups/cup_clean_1.png"
+                        value={customImageUrl}
+                        onChange={(e) => setCustomImageUrl(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleVerifyAndSetUrl();
+                          }
+                        }}
+                        className="flex-1 px-3 py-2 bg-[#140D09] border border-[#3A251A] rounded-xl text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
+                      />
                       <button
                         type="button"
-                        onClick={() => handleRemoveImage(idx)}
-                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 text-red-400 transition-opacity"
+                        disabled={verifyingUrl || !customImageUrl.trim()}
+                        onClick={handleVerifyAndSetUrl}
+                        className="px-4 py-2 rounded-xl bg-[#281A12] hover:bg-[#382419] disabled:opacity-50 text-[#C49A6C] hover:text-[#E8C49F] text-xs font-semibold border border-[#3E2518] transition-colors flex items-center gap-1.5"
                       >
-                        <X size={14} />
+                        {verifyingUrl ? (
+                          <>
+                            <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-[#C49A6C] rounded-full animate-spin" />
+                            <span>Verifying...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check size={14} />
+                            <span>Apply URL</span>
+                          </>
+                        )}
                       </button>
                     </div>
-                  ))}
+                  </div>
+                )}
 
-                  <label className="w-14 h-14 rounded-lg border border-dashed border-[#4A3223] hover:border-[#C49A6C] flex flex-col items-center justify-center text-[#8C705E] hover:text-[#C49A6C] cursor-pointer transition-colors">
-                    {uploadingImage ? (
-                      <div className="w-4 h-4 border border-t-[#C49A6C] rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <UploadCloud size={16} />
-                        <span className="text-[9px] mt-0.5">Upload</span>
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageFileUpload}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
+                {/* Active Image Preview & Management */}
+                {(previewUrl || (formData.images && formData.images.length > 0)) && (
+                  <div className="pt-2 border-t border-[#261811] space-y-2">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-semibold text-[#EDE0D4] flex items-center gap-1.5">
+                        <ImageIcon size={13} className="text-[#C49A6C]" />
+                        <span>Active Image Preview</span>
+                      </span>
+                      <span className="text-[10px] text-[#8C705E] font-mono truncate max-w-[250px]">
+                        {previewUrl || formData.images[0]}
+                      </span>
+                    </div>
 
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    placeholder="Or paste image URL (e.g. /images/spanish-latte.png)"
-                    value={customImageUrl}
-                    onChange={(e) => setCustomImageUrl(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-[#1F1510] border border-[#3A251A] rounded-lg text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddImageUrl}
-                    className="px-3 py-1.5 rounded-lg bg-[#281A12] hover:bg-[#342217] text-[#C49A6C] text-xs font-medium border border-[#3E2518]"
-                  >
-                    Add URL
-                  </button>
-                </div>
-              </div>
+                    <div className="relative w-full h-44 bg-[#0E0906] rounded-xl border border-[#3A2417] flex items-center justify-center p-3 overflow-hidden shadow-inner group">
+                      <img
+                        src={previewUrl || formData.images[0]}
+                        alt="Product Preview"
+                        onError={() => setUploadError('Warning: This image failed to render. Please check the URL or upload a new image.')}
+                        className="max-h-full max-w-full object-contain select-none"
+                      />
+                      {uploadingImage && (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-xs text-[#EAD18D] space-y-2">
+                          <div className="w-7 h-7 border-2 border-white/20 border-t-[#C49A6C] rounded-full animate-spin" />
+                          <span>Uploading image...</span>
+                        </div>
+                      )}
+                    </div>
 
-              {/* Sizes / Options */}
-              <div className="p-3.5 rounded-xl bg-[#1A110C] border border-[#2B1B13] space-y-2">
-                <label className="block text-xs font-semibold text-[#D4A373]">
-                  Sizes & Serving Options
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {formData.sizes.map((s, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-[#241710] border border-[#3A2417] text-xs text-[#EDE0D4] flex items-center space-x-1.5"
-                    >
-                      <span>{s}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSize(s)}
-                        className="text-[#8C705E] hover:text-red-400"
-                      >
-                        <X size={12} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    placeholder="e.g. Regular (8oz), Large (12oz)"
-                    value={sizeInput}
-                    onChange={(e) => setSizeInput(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-[#1F1510] border border-[#3A251A] rounded-lg text-xs text-[#F2E4D5] focus:outline-none focus:border-[#C49A6C]"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddSize}
-                    className="px-3 py-1.5 rounded-lg bg-[#281A12] text-[#C49A6C] text-xs font-medium border border-[#3E2518]"
-                  >
-                    + Add Size
-                  </button>
-                </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="text-[10px] text-[#A68C7A]">
+                        {previewUrl?.startsWith('http') ? (
+                          <span className="text-sky-400 font-medium">Linked via External URL</span>
+                        ) : previewUrl?.startsWith('/uploads/') ? (
+                          <span className="text-emerald-400 font-medium">Stored in /public/uploads/</span>
+                        ) : (
+                          <span className="text-[#C49A6C] font-medium">Local Asset File</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        {imageMode === 'device' && (
+                          <label className="px-3 py-1 rounded-lg bg-[#251710] hover:bg-[#342217] text-[#C49A6C] text-xs font-medium border border-[#3E271B] cursor-pointer transition-colors">
+                            Replace File
+                            <input
+                              type="file"
+                              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                              disabled={uploadingImage}
+                              onChange={handleImageFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="px-2.5 py-1 rounded-lg bg-red-950/50 hover:bg-red-900/60 text-red-300 text-xs font-medium border border-red-800/60 transition-colors"
+                        >
+                          Remove Image
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Modal Buttons */}
@@ -753,7 +802,7 @@ export default function Products() {
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#6E4E37] to-[#8C5D3B] hover:from-[#7D593E] hover:to-[#9D6A44] text-white text-xs font-semibold shadow-lg shadow-[#6E4E37]/30"
                 >
-                  {editingProduct ? 'Save Changes' : 'Create Product'}
+                  {editingProduct ? 'Save Changes' : 'Add Menu Item'}
                 </button>
               </div>
             </form>

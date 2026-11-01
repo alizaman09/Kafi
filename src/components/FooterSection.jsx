@@ -40,8 +40,9 @@ export default function FooterSection({
         opacity,
         transform: `translateY(${translateY}px)`,
         pointerEvents: isInteractive ? 'auto' : 'none',
+        willChange: 'transform, opacity',
       }}
-      className="fixed inset-0 z-30 flex flex-col justify-between pt-4 sm:pt-8 md:pt-10 overflow-y-auto overflow-x-hidden transition-opacity duration-200"
+      className="fixed inset-0 z-30 flex flex-col justify-between pt-4 sm:pt-8 md:pt-10 overflow-y-auto overflow-x-hidden transition-opacity duration-200 no-scrollbar"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center select-none pointer-events-none py-3 sm:py-6">
@@ -50,7 +51,7 @@ export default function FooterSection({
           <span>Specialty Roastery & Coffee Lab</span>
         </div>
 
-        <h1 className="font-display font-black text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-[0.12em] xs:tracking-[0.16em] sm:tracking-[0.22em] text-transparent bg-clip-text bg-gradient-to-b from-[#FFFDF9] via-[#F4E9DC] to-[#D4AF37] uppercase drop-shadow-[0_15px_45px_rgba(0,0,0,0.95)] leading-none">
+        <h1 className="font-display font-black text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-[0.10em] sm:tracking-[0.22em] text-transparent bg-clip-text bg-gradient-to-b from-[#FFFDF9] via-[#F4E9DC] to-[#D4AF37] uppercase drop-shadow-[0_15px_45px_rgba(0,0,0,0.95)] leading-none break-words">
           KAFI
         </h1>
 
@@ -65,15 +66,15 @@ export default function FooterSection({
 
       {/* 2. Footer Container — Dark Theme: Deep Espresso Brown #1A120B with Warm Beige/Gold Accents */}
       <footer className="w-full bg-[#1A120B]/95 sm:bg-[#1A120B]/92 backdrop-blur-md border-t border-[#EAD18D]/25 shadow-[0_-15px_45px_rgba(0,0,0,0.85)] text-[#F5F2EB] pointer-events-auto">
-        
+
         {/* Subtle Ambient Gold Gradient Line on top */}
         <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#EAD18D]/50 to-transparent" />
 
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-7 sm:py-9 lg:py-10">
-          
+
           {/* 4-Column Grid Layout on Desktop, Stacking to 1 Column on Mobile */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 sm:gap-8 lg:gap-10">
-            
+
             {/* =========================================================
                 COLUMN 1: BRAND
                 ========================================================= */}

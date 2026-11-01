@@ -73,8 +73,9 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         opacity: heroOpacity,
         transform: `translateY(${heroTranslateY}px)`,
         pointerEvents: heroOpacity > 0.3 ? 'auto' : 'none',
+        willChange: 'transform, opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 max-h-screen transition-opacity duration-150 overflow-x-hidden overflow-y-auto sm:overflow-hidden"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 max-h-screen transition-opacity duration-150 overflow-x-hidden overflow-y-auto sm:overflow-hidden no-scrollbar"
     >
       {/* Translucent Warm Coffee Ambient Veil (#6E4E37) — Light so background animation remains visible */}
       <div className="fixed inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[2px]" />
@@ -132,20 +133,28 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </a>
         </nav>
 
-        {/* Right Cart Button with Live Counter Badge */}
-        <button
-          onClick={onOpenCart}
-          className="relative px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1 sm:gap-1.5 shrink-0"
-          title="Open Cart & Checkout"
-        >
-          <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#3D2214]" />
-          <span>Cart</span>
-          {cartCount > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-[#3D2214] text-[#EAD18D] text-[9px] sm:text-[10px] font-mono font-black shadow-sm">
-              {cartCount}
-            </span>
-          )}
-        </button>
+        {/* Right Actions: Mobile Menu Shortcut + Cart Button */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <button
+            onClick={onOpenMenu}
+            className="md:hidden px-2.5 py-1 min-h-[30px] rounded-full bg-[#6E4E37]/80 hover:bg-[#6E4E37] border border-white/25 text-white text-[10.5px] font-bold tracking-wide active:scale-95 transition-all shadow-sm flex items-center gap-1"
+          >
+            <span>Menu</span>
+          </button>
+          <button
+            onClick={onOpenCart}
+            className="relative px-2.5 sm:px-4 py-1 sm:py-1.5 min-h-[30px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1 sm:gap-1.5 shrink-0"
+            title="Open Cart & Checkout"
+          >
+            <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#3D2214]" />
+            <span>Cart</span>
+            {cartCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-[#3D2214] text-[#EAD18D] text-[9px] sm:text-[10px] font-mono font-black shadow-sm">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        </div>
       </header>
 
       {/* =========================================================================

@@ -39,6 +39,7 @@ export function useImagePreloader({
   const framesRef = useRef<(HTMLImageElement | null)[]>([]);
   const loadingPromisesRef = useRef<Map<number, Promise<HTMLImageElement | null>>>(new Map());
   const isCancelledRef = useRef<boolean>(false);
+  const loadedCountRef = useRef<number>(0);
 
   if (framesRef.current.length !== totalFrames) {
     framesRef.current = new Array(totalFrames).fill(null);
@@ -69,11 +70,12 @@ export function useImagePreloader({
 
         img.onload = () => {
           framesRef.current[index] = img;
-          setLoadedCount((prev) => {
-            const updated = prev + 1;
-            setProgress(Math.round((updated / totalFrames) * 100));
-            return updated;
-          });
+          loadedCountRef.current += 1;
+          // Throttle progress state to prevent 300 rapid re-render cycles
+          if (loadedCountRef.current % 25 === 0 || loadedCountRef.current === totalFrames) {
+            setLoadedCount(loadedCountRef.current);
+            setProgress(Math.round((loadedCountRef.current / totalFrames) * 100));
+          }
           resolve(img);
         };
 

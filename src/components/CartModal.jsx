@@ -355,7 +355,7 @@ export default function CartModal({
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Your Full Name *"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-xs placeholder-white/40 transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 sm:py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-sm sm:text-xs placeholder-white/40 transition-all"
                         required
                       />
                     </div>
@@ -371,7 +371,7 @@ export default function CartModal({
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="WhatsApp / Phone Number (e.g. 0300-1234567) *"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-xs placeholder-white/40 transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 sm:py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-sm sm:text-xs placeholder-white/40 transition-all"
                         required
                       />
                     </div>
@@ -387,7 +387,7 @@ export default function CartModal({
                         value={formData.address}
                         onChange={handleChange}
                         placeholder="Delivery Address (House #, Street, Block, Gulberg / DHA Lahore) *"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-xs placeholder-white/40 resize-none transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 sm:py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-sm sm:text-xs placeholder-white/40 resize-none transition-all"
                         required
                       />
                     </div>
@@ -403,7 +403,7 @@ export default function CartModal({
                         value={formData.notes}
                         onChange={handleChange}
                         placeholder="Special instructions (e.g. less ice, extra hot, no sugar)"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-xs placeholder-white/40 transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 sm:py-2 rounded-xl bg-black/40 border border-white/20 focus:border-[#EAD18D] focus:outline-none text-white text-sm sm:text-xs placeholder-white/40 transition-all"
                       />
                     </div>
 
@@ -411,7 +411,7 @@ export default function CartModal({
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full mt-2 py-3 px-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#EAD18D] to-[#F3D68E] hover:from-white hover:to-[#FAF6F0] text-[#1C0F08] font-sans font-black text-xs sm:text-sm tracking-wider uppercase shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                      className="w-full mt-2 min-h-[44px] py-3 px-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#EAD18D] to-[#F3D68E] hover:from-white hover:to-[#FAF6F0] text-[#1C0F08] font-sans font-black text-xs sm:text-sm tracking-wider uppercase shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                     >
                       <span>{isSubmitting ? 'Processing...' : 'Place Order via WhatsApp'}</span>
                       <ArrowRight className="w-4 h-4 text-[#1C0F08]" />
