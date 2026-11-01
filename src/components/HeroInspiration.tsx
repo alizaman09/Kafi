@@ -89,22 +89,22 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
           ========================================================================= */}
       <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-auto shrink-0">
-        {/* Brand: KAFI GULBERG (Standardized Prominent Logo Typography) */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
+        {/* Brand: KAFI GULBERG (High-Contrast, Readable Logo with Clean Shadow) */}
+        <div className="flex items-center gap-2 sm:gap-2.5 px-2 xs:px-2.5 py-1 rounded-full bg-[#1C0F08]/60 backdrop-blur-md border border-white/20 shadow-md">
+          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/35 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
             <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EAD18D]" />
           </div>
           <div>
             <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="font-serif text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+              <span className="font-serif text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-wider text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_12px_rgba(0,0,0,0.85)]">
                 KAFI
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EAD18D]" />
-              <span className="text-[9.5px] xs:text-[11px] sm:text-xs md:text-sm font-mono tracking-widest text-[#EAD18D] font-black uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EAD18D] shadow-[0_0_6px_#EAD18D]" />
+              <span className="text-[9.5px] xs:text-[11px] sm:text-xs md:text-sm font-mono tracking-widest text-[#F3D68E] font-black uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                 Gulberg
               </span>
             </div>
-            <p className="text-[8px] xs:text-[9.5px] sm:text-xs text-[#F5EFEB]/90 font-sans font-semibold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+            <p className="text-[8px] xs:text-[9.5px] sm:text-xs text-[#FFFDF9] font-sans font-bold tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.95)]">
               Specialty Coffee & Roastery
             </p>
           </div>
@@ -230,10 +230,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           2. MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
           ========================================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto mt-0.5 xs:mt-1 sm:my-auto py-0 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-1.5 xs:gap-2.5 lg:gap-4 items-center pointer-events-auto">
+      <div className="relative z-10 w-full max-w-7xl mx-auto mt-0 sm:my-auto py-0 sm:py-1 grid grid-cols-1 lg:grid-cols-12 gap-1 xs:gap-2 lg:gap-4 items-center pointer-events-auto">
 
-        {/* Left Column: Bold Editorial Typography (Shifted Significantly Higher Up Near Navbar) */}
-        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-6 xs:-mt-9 sm:-mt-12 lg:-mt-14">
+        {/* Left Column: Bold Editorial Typography (Shifted Further Up Closer to Navbar) */}
+        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-10 xs:-mt-14 sm:-mt-16 lg:-mt-20">
 
           {/* Soft #6E4E37 ambient glow behind text */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#6E4E37]/50 via-[#6E4E37]/30 to-transparent rounded-2xl backdrop-blur-[2px] pointer-events-none" />
@@ -273,16 +273,16 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Massively Enlarged Center Cup Image & Outer Circle Ring */}
-        <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0">
+        {/* Right Column: Maximize Center Cup Image & Outer Circle Ring */}
+        <div className="lg:col-span-6 flex items-center justify-center relative my-0.5 xs:my-1 sm:my-0">
 
-          {/* Frosted Translucent #6E4E37 Circular Plate (Massively Enlarged) */}
-          <div className="relative w-48 h-48 xs:w-56 xs:h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_20px_50px_rgba(0,0,0,0.45)] border-[3px] sm:border-[4px] border-white/45 flex items-center justify-center backdrop-blur-md">
+          {/* Frosted Translucent #6E4E37 Circular Plate (Maximized Size) */}
+          <div className="relative w-56 h-56 xs:w-64 xs:h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-[22rem] lg:h-[22rem] rounded-full bg-gradient-to-br from-[#6E4E37]/70 via-[#6E4E37]/50 to-[#6E4E37]/35 shadow-[0_24px_60px_rgba(0,0,0,0.55)] border-[3px] sm:border-[4px] border-white/50 flex items-center justify-center backdrop-blur-md">
 
             {/* Inner bevel ring */}
             <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
 
-            {/* Glass Cup scaled massively */}
+            {/* Glass Cup scaled prominently */}
             <motion.div
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -291,7 +291,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
               <img
                 src="/assets/glass_latte.png"
                 alt="KAFI Artisan Iced Spanish Latte"
-                className="w-36 xs:w-44 sm:w-52 md:w-60 lg:w-68 h-auto max-h-[90%] object-contain drop-shadow-[0_18px_28px_rgba(0,0,0,0.6)] select-none"
+                className="w-44 xs:w-52 sm:w-60 md:w-68 lg:w-76 h-auto max-h-[92%] object-contain drop-shadow-[0_20px_32px_rgba(0,0,0,0.65)] select-none"
               />
             </motion.div>
 
@@ -341,8 +341,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                   onClick={() => handleCardAdd(1)}
                   title="Add Americano Latte to Cart"
                   className={`p-1 rounded-full border transition-colors ${cart['americano-latte']
-                      ? 'bg-emerald-500 text-white border-emerald-400'
-                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                    ? 'bg-emerald-500 text-white border-emerald-400'
+                    : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
                 >
                   {cart['americano-latte'] ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : <ShoppingCart className="w-2.5 h-2.5" />}
@@ -350,8 +350,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 <button
                   onClick={() => setLikedCard(likedCard === 1 ? null : 1)}
                   className={`p-1 rounded-full border transition-colors ${likedCard === 1
-                      ? 'bg-red-500/80 text-white border-red-400'
-                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                    ? 'bg-red-500/80 text-white border-red-400'
+                    : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
                 >
                   <Heart className={`w-2.5 h-2.5 ${likedCard === 1 ? 'fill-red-400' : ''}`} />
@@ -390,8 +390,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                   onClick={() => handleCardAdd(2)}
                   title="Add Ceremonial Matcha to Cart"
                   className={`p-1 rounded-full border transition-colors ${cart['ceremonial-matcha']
-                      ? 'bg-emerald-500 text-white border-emerald-400'
-                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                    ? 'bg-emerald-500 text-white border-emerald-400'
+                    : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
                 >
                   {cart['ceremonial-matcha'] ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : <ShoppingCart className="w-2.5 h-2.5" />}
@@ -399,8 +399,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 <button
                   onClick={() => setLikedCard(likedCard === 2 ? null : 2)}
                   className={`p-1 rounded-full border transition-colors ${likedCard === 2
-                      ? 'bg-red-500/80 text-white border-red-400'
-                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                    ? 'bg-red-500/80 text-white border-red-400'
+                    : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
                 >
                   <Heart className={`w-2.5 h-2.5 ${likedCard === 2 ? 'fill-red-400' : ''}`} />

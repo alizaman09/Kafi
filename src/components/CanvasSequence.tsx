@@ -230,7 +230,8 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative h-[600vh] w-full bg-[#0A0A0A]"
+      className="relative h-[600vh] w-full bg-[#1A100B]"
+      style={{ overscrollBehaviorY: 'none' }}
     >
       {/* 
         FIXED FULLSCREEN VIEWPORT:
