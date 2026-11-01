@@ -275,8 +275,8 @@ export default function InteriorMenuOverlay({
         {/* Floating Cart Bar when items are selected */}
         {totalCount > 0 && (
           <motion.div
-            initial={{ y: 15, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="mt-2 sm:mt-3 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#6E4E37]/95 border border-[#EAD18D]/50 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-bold text-white shrink-0"
           >
             <div className="flex items-center gap-1 sm:gap-1.5">

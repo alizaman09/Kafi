@@ -7,14 +7,12 @@ export default function FooterSection({
   onOpenMenu,
   onOpenCart,
 }) {
-  // Section 3 Entrance Curve with smooth cubic Hermite easing
+  // Section 3 Entrance Curve with smooth cubic Hermite easing (Pure opacity fade, zero y-axis shifting)
   let opacity = 0;
-  let translateY = 15;
 
   if (scrollProgress >= 0.72) {
     const t = Math.min(1, (scrollProgress - 0.72) / 0.12);
     opacity = t * t * (3 - 2 * t);
-    translateY = (1 - opacity) * 15;
   }
 
   const isVisible = opacity > 0.02;
@@ -37,9 +35,8 @@ export default function FooterSection({
     <div
       style={{
         opacity,
-        transform: `translateY(${translateY}px)`,
         pointerEvents: isInteractive ? 'auto' : 'none',
-        willChange: 'transform, opacity',
+        willChange: 'opacity',
       }}
       className="fixed inset-0 z-30 flex flex-col justify-between pt-4 sm:pt-8 md:pt-10 h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden transition-opacity duration-200 no-scrollbar"
     >

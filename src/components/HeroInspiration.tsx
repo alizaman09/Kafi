@@ -282,18 +282,14 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
             {/* Inner bevel ring */}
             <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
 
-            {/* Glass Cup scaled prominently */}
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            >
+            {/* Glass Cup scaled prominently (Zero y-axis shifting for 100% stable positioning) */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <img
                 src="/assets/glass_latte.png"
                 alt="KAFI Artisan Iced Spanish Latte"
                 className="w-44 xs:w-52 sm:w-60 md:w-68 lg:w-76 h-auto max-h-[92%] object-contain drop-shadow-[0_20px_32px_rgba(0,0,0,0.65)] select-none"
               />
-            </motion.div>
+            </div>
 
             {/* Badge */}
             <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[8px] sm:text-[9px] font-mono font-black tracking-wider shadow-lg border border-white/20">

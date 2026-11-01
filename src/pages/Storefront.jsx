@@ -107,7 +107,13 @@ export default function Storefront() {
   );
 
   return (
-    <main className="relative w-full min-h-screen min-h-[100dvh] bg-[#1A100B] overflow-x-hidden" style={{ overscrollBehaviorY: 'none' }}>
+    <main
+      className="relative w-full min-h-[100dvh] overflow-x-hidden"
+      style={{
+        backgroundColor: 'var(--theme-bg-color, #1A100B)',
+        overscrollBehaviorY: 'none',
+      }}
+    >
       {/* 1. Underlying 300-Frame Scrollytelling Animation (Pinned Fullscreen Canvas) */}
       <CanvasSequence totalFrames={300} lerpFactor={0.06} />
 
