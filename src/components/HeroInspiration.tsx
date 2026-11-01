@@ -87,22 +87,22 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
           ========================================================================= */}
       <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-auto shrink-0">
-        {/* Brand: KAFI GULBERG (High-Contrast, Readable Logo with Clean Shadow) */}
-        <div className="flex items-center gap-2 sm:gap-2.5 px-2 xs:px-2.5 py-1 rounded-full bg-[#1C0F08]/60 backdrop-blur-md border border-white/20 shadow-md">
-          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/35 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
+        {/* Brand: KAFI GULBERG */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
             <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EAD18D]" />
           </div>
           <div>
             <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="font-serif text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-wider text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_12px_rgba(0,0,0,0.85)]">
+              <span className="font-serif text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                 KAFI
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EAD18D] shadow-[0_0_6px_#EAD18D]" />
-              <span className="text-[9.5px] xs:text-[11px] sm:text-xs md:text-sm font-mono tracking-widest text-[#F3D68E] font-black uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EAD18D]" />
+              <span className="text-[9.5px] xs:text-[11px] sm:text-xs md:text-sm font-mono tracking-widest text-[#EAD18D] font-black uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                 Gulberg
               </span>
             </div>
-            <p className="text-[8px] xs:text-[9.5px] sm:text-xs text-[#FFFDF9] font-sans font-bold tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.95)]">
+            <p className="text-[8px] xs:text-[9.5px] sm:text-xs text-[#F5EFEB]/90 font-sans font-semibold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
               Specialty Coffee & Roastery
             </p>
           </div>
@@ -222,10 +222,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       {/* =========================================================================
           2. MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
           ========================================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto mt-0 sm:my-auto py-0 sm:py-1 grid grid-cols-1 lg:grid-cols-12 gap-1 xs:gap-2 lg:gap-4 items-center pointer-events-auto">
+      <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-auto">
 
-        {/* Left Column: Bold Editorial Typography (Shifted Further Up Closer to Navbar) */}
-        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-10 xs:-mt-14 sm:-mt-16 lg:-mt-20">
+        {/* Left Column: Bold Editorial Typography */}
+        <div className="relative lg:col-span-6 flex flex-col items-start text-left p-1 sm:p-2 md:p-3 rounded-2xl -mt-2 xs:-mt-3 sm:-mt-6 lg:-mt-8">
 
           {/* Soft #6E4E37 ambient glow behind text */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#6E4E37]/50 via-[#6E4E37]/30 to-transparent rounded-2xl backdrop-blur-[2px] pointer-events-none" />
@@ -265,39 +265,37 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Maximize Center Cup Image & Outer Circle Ring */}
-        <div className="lg:col-span-6 flex items-center justify-center relative my-0.5 xs:my-1 sm:my-0">
+        {/* Right Column: Center Cup Image & Outer Circle Ring */}
+        <div className="lg:col-span-6 flex items-center justify-center relative my-1 xs:my-2 sm:my-0">
 
-          {/* Frosted Translucent #6E4E37 Circular Plate (Maximized Size) */}
-          <div className="relative w-56 h-56 xs:w-64 xs:h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-[22rem] lg:h-[22rem] rounded-full bg-gradient-to-br from-[#6E4E37]/70 via-[#6E4E37]/50 to-[#6E4E37]/35 shadow-[0_24px_60px_rgba(0,0,0,0.55)] border-[3px] sm:border-[4px] border-white/50 flex items-center justify-center backdrop-blur-md">
+          {/* Frosted Translucent #6E4E37 Circular Plate */}
+          <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full bg-gradient-to-br from-[#6E4E37]/65 via-[#6E4E37]/50 to-[#6E4E37]/30 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border-[2.5px] sm:border-[3.5px] border-white/45 flex items-center justify-center backdrop-blur-md">
 
             {/* Inner bevel ring */}
             <div className="w-[88%] h-[88%] rounded-full border border-white/35 shadow-inner flex items-center justify-center" />
 
-            {/* Glass Cup scaled prominently (Zero y-axis shifting for 100% stable positioning) */}
+            {/* Glass Cup scaled prominently */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <img
                 src="/assets/glass_latte.png"
                 alt="KAFI Artisan Iced Spanish Latte"
-                className="w-44 xs:w-52 sm:w-60 md:w-68 lg:w-76 h-auto max-h-[92%] object-contain drop-shadow-[0_20px_32px_rgba(0,0,0,0.65)] select-none"
+                className="w-28 xs:w-34 sm:w-42 md:w-48 lg:w-52 h-auto max-h-[90%] object-contain drop-shadow-[0_18px_28px_rgba(0,0,0,0.6)] select-none"
               />
             </div>
 
             {/* Badge */}
-            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[8px] sm:text-[9px] font-mono font-black tracking-wider shadow-lg border border-white/20">
+            <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-2 py-0.5 rounded-full bg-[#1C0F08]/90 text-[#FFFDF9] text-[7.5px] sm:text-[8.5px] font-mono font-black tracking-wider shadow-lg border border-white/20">
               ★ KAFI GULBERG
             </div>
-
           </div>
-
         </div>
 
       </div>
 
       {/* =========================================================================
-          3. BOTTOM SECTION: Side-by-Side on Mobile, Responsive & Lifted
+          3. BOTTOM SECTION: Side-by-Side on Mobile, Anchored at Lower Position
           ========================================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto pt-0 pb-1 mb-0.5 sm:mb-2 md:mb-3 flex flex-col md:flex-row items-stretch md:items-end justify-between gap-2 sm:gap-3 pointer-events-auto shrink-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto pt-0 pb-1 sm:pb-2 md:pb-3 mt-auto flex flex-col md:flex-row items-stretch md:items-end justify-between gap-2 sm:gap-3 pointer-events-auto shrink-0">
 
         {/* Left Side: 2 Compact Cards (Side-by-Side on all screen sizes) */}
         <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto">
