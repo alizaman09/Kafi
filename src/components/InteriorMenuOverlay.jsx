@@ -119,25 +119,22 @@ export default function InteriorMenuOverlay({
       .catch(() => { });
   }, []);
 
-  // Entrance curve: Door opens and camera enters around 0.22 -> 0.32
-  // Stays active across interior section through 0.76
+  // Entrance & Exit curves with smooth cubic Hermite easing (zero jerky jumps)
   let opacity = 0;
-  let translateY = 20;
 
-  if (scrollProgress >= 0.22 && scrollProgress <= 0.76) {
+  if (scrollProgress >= 0.20 && scrollProgress <= 0.78) {
     if (scrollProgress < 0.32) {
-      opacity = (scrollProgress - 0.22) / (0.32 - 0.22);
-      translateY = (1 - opacity) * 20;
-    } else if (scrollProgress > 0.67) {
-      opacity = 1 - (scrollProgress - 0.67) / (0.76 - 0.67);
-      translateY = (scrollProgress - 0.67) / 0.09 * -20;
+      const t = Math.max(0, Math.min(1, (scrollProgress - 0.20) / (0.32 - 0.20)));
+      opacity = t * t * (3 - 2 * t);
+    } else if (scrollProgress > 0.66) {
+      const t = Math.max(0, Math.min(1, (scrollProgress - 0.66) / (0.78 - 0.66)));
+      opacity = 1 - t * t * (3 - 2 * t);
     } else {
       opacity = 1;
-      translateY = 0;
     }
   }
 
-  const isVisible = opacity > 0.02;
+  const isVisible = opacity > 0.01;
   const isInteractive = opacity > 0.35;
 
   if (!isVisible) return null;
@@ -156,13 +153,12 @@ export default function InteriorMenuOverlay({
     <div
       style={{
         opacity,
-        transform: `translateY(${translateY}px)`,
         pointerEvents: isInteractive ? 'auto' : 'none',
-        willChange: 'transform, opacity',
+        willChange: 'opacity',
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}
-      className="fixed inset-0 z-30 flex justify-center p-2 sm:p-4 pb-12 sm:pb-16 transition-opacity duration-150 overflow-y-auto overflow-x-hidden no-scrollbar"
+      className="fixed inset-0 z-30 flex justify-center p-2 sm:p-4 pb-12 sm:pb-16 h-[100dvh] max-h-[100dvh] transition-opacity duration-200 overflow-y-auto overflow-x-hidden no-scrollbar"
     >
       {/* Explicit CSS to eliminate all browser scrollbar lines */}
       <style>{`

@@ -14,18 +14,13 @@ export default function Storefront() {
 
   useEffect(() => {
     let ticking = false;
-    let lastProgress = -1;
 
     const updateScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       if (maxScroll > 0) {
         const rawProgress = Math.max(0, Math.min(1, scrollY / maxScroll));
-        const rounded = Math.round(rawProgress * 1000) / 1000;
-        if (Math.abs(rounded - lastProgress) >= 0.002) {
-          lastProgress = rounded;
-          setScrollProgress(rounded);
-        }
+        setScrollProgress(rawProgress);
       }
       ticking = false;
     };

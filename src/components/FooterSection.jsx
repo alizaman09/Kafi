@@ -7,15 +7,14 @@ export default function FooterSection({
   onOpenMenu,
   onOpenCart,
 }) {
-  // Section 3 Entrance Curve:
-  // Starts fading in smoothly as Section 2 finishes (from 0.72 to 0.84)
-  // Stays fully visible and interactive through 1.0 (end of page)
+  // Section 3 Entrance Curve with smooth cubic Hermite easing
   let opacity = 0;
-  let translateY = 30;
+  let translateY = 15;
 
   if (scrollProgress >= 0.72) {
-    opacity = Math.min(1, (scrollProgress - 0.72) / 0.12);
-    translateY = (1 - opacity) * 30;
+    const t = Math.min(1, (scrollProgress - 0.72) / 0.12);
+    opacity = t * t * (3 - 2 * t);
+    translateY = (1 - opacity) * 15;
   }
 
   const isVisible = opacity > 0.02;
@@ -42,7 +41,7 @@ export default function FooterSection({
         pointerEvents: isInteractive ? 'auto' : 'none',
         willChange: 'transform, opacity',
       }}
-      className="fixed inset-0 z-30 flex flex-col justify-between pt-4 sm:pt-8 md:pt-10 overflow-y-auto overflow-x-hidden transition-opacity duration-200 no-scrollbar"
+      className="fixed inset-0 z-30 flex flex-col justify-between pt-4 sm:pt-8 md:pt-10 h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden transition-opacity duration-200 no-scrollbar"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center select-none pointer-events-none py-3 sm:py-6">

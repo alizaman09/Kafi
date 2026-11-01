@@ -66,21 +66,21 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
     }
   };
 
-  // Fade out smoothly as user scrolls past hero (0.0 to 0.25)
-  const heroOpacity = Math.max(0, Math.min(1, 1 - scrollProgress / 0.25));
-  const heroTranslateY = (scrollProgress / 0.25) * -40;
+  // Completely smooth, fluid easing curve without jerky jumps or elastic bounce
+  const progressRatio = Math.max(0, Math.min(1, scrollProgress / 0.22));
+  const smoothProgress = progressRatio * progressRatio * (3 - 2 * progressRatio);
+  const heroOpacity = Math.max(0, Math.min(1, 1 - smoothProgress));
 
-  if (heroOpacity <= 0.01) return null;
+  if (heroOpacity <= 0.005) return null;
 
   return (
     <div
       style={{
         opacity: heroOpacity,
-        transform: `translateY(${heroTranslateY}px)`,
         pointerEvents: heroOpacity > 0.3 ? 'auto' : 'none',
-        willChange: 'transform, opacity',
+        willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 max-h-screen transition-opacity duration-150 overflow-x-hidden overflow-y-auto sm:overflow-hidden no-scrollbar"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 h-[100dvh] max-h-[100dvh] w-full overflow-hidden no-scrollbar"
     >
       {/* Translucent Warm Coffee Ambient Veil (#6E4E37) — Light so background animation remains visible */}
       <div className="fixed inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[2px]" />
