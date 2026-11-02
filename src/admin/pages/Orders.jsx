@@ -105,13 +105,18 @@ export default function Orders() {
     }
   };
 
-  const filteredOrders = orders.filter(o => {
+  const filteredOrders = (orders || []).filter(o => {
+    const s = (search || '').trim().toLowerCase();
+    const orderNum = (o?.order_number || '').toLowerCase();
+    const custName = (o?.customer_name || '').toLowerCase();
+    const custPhone = (o?.customer_phone || '').toLowerCase();
+
     const matchesSearch =
-      search === '' ||
-      o.order_number.toLowerCase().includes(search.toLowerCase()) ||
-      o.customer_name.toLowerCase().includes(search.toLowerCase()) ||
-      o.customer_phone.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || o.order_status === selectedStatus;
+      s === '' ||
+      orderNum.includes(s) ||
+      custName.includes(s) ||
+      custPhone.includes(s);
+    const matchesStatus = selectedStatus === 'all' || o?.order_status === selectedStatus;
     return matchesSearch && matchesStatus;
   });
 

@@ -55,13 +55,14 @@ export default function Customers() {
     }
   };
 
-  const filteredCustomers = customers.filter((c) => {
+  const filteredCustomers = (customers || []).filter((c) => {
+    const s = (search || '').trim().toLowerCase();
     return (
-      search === '' ||
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.toLowerCase().includes(search.toLowerCase()) ||
-      (c.email && c.email.toLowerCase().includes(search.toLowerCase())) ||
-      (c.city && c.city.toLowerCase().includes(search.toLowerCase()))
+      s === '' ||
+      (c?.name && c.name.toLowerCase().includes(s)) ||
+      (c?.phone && c.phone.toLowerCase().includes(s)) ||
+      (c?.email && c.email.toLowerCase().includes(s)) ||
+      (c?.city && c.city.toLowerCase().includes(s))
     );
   });
 
@@ -123,7 +124,7 @@ export default function Customers() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center space-x-2.5">
                         <div className="w-8 h-8 rounded-full bg-[#2A1B13] text-[#D4A373] font-serif font-bold text-xs flex items-center justify-center border border-[#3E271B]">
-                          {cust.name.charAt(0).toUpperCase()}
+                          {(cust?.name || 'C').charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <p className="font-semibold text-[#EDE0D4]">{cust.name}</p>
@@ -172,7 +173,7 @@ export default function Customers() {
             <div className="flex items-center justify-between pb-3 border-b border-[#281A12]">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-[#2A1B13] text-[#D4A373] font-serif font-bold text-sm flex items-center justify-center border border-[#3E271B]">
-                  {selectedCustomer.name.charAt(0).toUpperCase()}
+                  {(selectedCustomer?.name || 'C').charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h3 className="text-base font-serif font-bold text-[#F2E4D5]">

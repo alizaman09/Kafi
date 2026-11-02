@@ -2,16 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import {
-  Boxes,
-  AlertTriangle,
-  ArrowUpDown,
   History,
-  CheckCircle,
   Plus,
   Minus,
   X,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 
 export default function Inventory() {
@@ -51,10 +46,12 @@ export default function Inventory() {
       ]);
       const invData = await invRes.json();
       const logsData = await logsRes.json();
-      setInventory(invData);
-      setLogs(logsData);
+      setInventory(Array.isArray(invData) ? invData : []);
+      setLogs(Array.isArray(logsData) ? logsData : []);
     } catch (err) {
       console.error('Failed to load inventory data:', err);
+      setInventory([]);
+      setLogs([]);
     } finally {
       setLoading(false);
     }
@@ -100,17 +97,22 @@ export default function Inventory() {
     }
   };
 
-  const filteredInventory = inventory.filter((item) => {
-    const matchesSearch =
-      search === '' ||
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.sku.toLowerCase().includes(search.toLowerCase());
+  const filteredInventory = (inventory || []).filter((item) => {
+    const searchLower = (search || '').trim().toLowerCase();
+    const itemName = (item?.name || '').toLowerCase();
+    const itemSku = (item?.sku || '').toLowerCase();
 
+    const matchesSearch =
+      searchLower === '' ||
+      itemName.includes(searchLower) ||
+      itemSku.includes(searchLower);
+
+    const stock = Number(item?.stock_quantity ?? 0);
     const matchesStatus =
       statusFilter === 'all' ||
-      (statusFilter === 'low_stock' && item.stock_quantity <= 10 && item.stock_quantity > 0) ||
-      (statusFilter === 'out_of_stock' && item.stock_quantity <= 0) ||
-      (statusFilter === 'in_stock' && item.stock_quantity > 10);
+      (statusFilter === 'low_stock' && stock <= 10 && stock > 0) ||
+      (statusFilter === 'out_of_stock' && stock <= 0) ||
+      (statusFilter === 'in_stock' && stock > 10);
 
     return matchesSearch && matchesStatus;
   });
@@ -233,14 +235,14 @@ export default function Inventory() {
                     filteredInventory.map((item) => (
                       <tr key={item.id} className="hover:bg-[#1C120B]/60 transition-colors">
                         <td className="py-3.5 px-4 font-mono font-semibold text-[#D4A373]">
-                          {item.sku}
+                          {item.sku || 'N/A'}
                         </td>
                         <td className="py-3.5 px-4 font-medium text-[#EDE0D4]">
-                          {item.name}
+                          {item.name || 'Unnamed Product'}
                         </td>
                         <td className="py-3.5 px-4">
                           <span className="font-serif font-bold text-sm text-[#F5EAE0]">
-                            {item.stock_quantity}
+                            {item.stock_quantity ?? 0}
                           </span>
                           <span className="text-[10px] text-[#8C705E] ml-1">units</span>
                         </td>
@@ -352,10 +354,10 @@ export default function Inventory() {
             <div className="flex items-center justify-between pb-3 border-b border-[#281A12]">
               <div>
                 <h3 className="text-base font-serif font-bold text-[#F2E4D5]">
-                  Adjust Stock: {adjustItem.name}
+                  Adjust Stock: {adjustItem.name || 'Product'}
                 </h3>
                 <p className="text-[11px] text-[#8C705E] font-mono">
-                  SKU: {adjustItem.sku} | Current: {adjustItem.stock_quantity} units
+                  SKU: {adjustItem.sku || 'N/A'} | Current: {adjustItem.stock_quantity ?? 0} units
                 </p>
               </div>
               <button onClick={() => setAdjustItem(null)} className="text-[#8C705E] hover:text-white">

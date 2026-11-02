@@ -279,18 +279,21 @@ export default function Products() {
   };
 
   // Filter products
-  const filteredProducts = products.filter(p => {
+  const filteredProducts = (products || []).filter(p => {
+    const s = (search || '').trim().toLowerCase();
+    const pName = (p?.name || '').toLowerCase();
+    const pDesc = (p?.description || '').toLowerCase();
     const matchesSearch =
-      search === '' ||
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.description && p.description.toLowerCase().includes(search.toLowerCase()));
-    const matchesCategory = selectedCategory === '' || String(p.category_id) === String(selectedCategory);
+      s === '' ||
+      pName.includes(s) ||
+      pDesc.includes(s);
+    const matchesCategory = selectedCategory === '' || String(p?.category_id) === String(selectedCategory);
     return matchesSearch && matchesCategory;
   }).sort((a, b) => {
-    if (sortOrder === 'price_asc') return a.regular_price - b.regular_price;
-    if (sortOrder === 'price_desc') return b.regular_price - a.regular_price;
-    if (sortOrder === 'name') return a.name.localeCompare(b.name);
-    return b.id - a.id;
+    if (sortOrder === 'price_asc') return (a?.regular_price || 0) - (b?.regular_price || 0);
+    if (sortOrder === 'price_desc') return (b?.regular_price || 0) - (a?.regular_price || 0);
+    if (sortOrder === 'name') return (a?.name || '').localeCompare(b?.name || '');
+    return (b?.id || 0) - (a?.id || 0);
   });
 
   return (
