@@ -132,21 +132,19 @@ export default function Inventory() {
         <div className="flex items-center p-1 rounded-xl bg-[#160E0A] border border-[#2B1B13]">
           <button
             onClick={() => setActiveTab('stock')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              activeTab === 'stock'
-                ? 'bg-[#6E4E37] text-white shadow-md'
-                : 'text-[#9E8372] hover:text-[#EDE0D4]'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${activeTab === 'stock'
+              ? 'bg-[#6E4E37] text-white shadow-md'
+              : 'text-[#9E8372] hover:text-[#EDE0D4]'
+              }`}
           >
             Live Inventory
           </button>
           <button
             onClick={() => setActiveTab('logs')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 ${
-              activeTab === 'logs'
-                ? 'bg-[#6E4E37] text-white shadow-md'
-                : 'text-[#9E8372] hover:text-[#EDE0D4]'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 ${activeTab === 'logs'
+              ? 'bg-[#6E4E37] text-white shadow-md'
+              : 'text-[#9E8372] hover:text-[#EDE0D4]'
+              }`}
           >
             <History size={13} />
             <span>Audit Logs</span>
@@ -161,31 +159,28 @@ export default function Inventory() {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setStatusFilter('all')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium ${
-                  statusFilter === 'all'
-                    ? 'bg-[#2E1E15] text-[#F2E4D5] border border-[#4A3224]'
-                    : 'text-[#8C705E] hover:text-[#EDE0D4]'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium ${statusFilter === 'all'
+                  ? 'bg-[#2E1E15] text-[#F2E4D5] border border-[#4A3224]'
+                  : 'text-[#8C705E] hover:text-[#EDE0D4]'
+                  }`}
               >
                 All Items ({inventory.length})
               </button>
               <button
                 onClick={() => setStatusFilter('low_stock')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium ${
-                  statusFilter === 'low_stock'
-                    ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
-                    : 'text-[#8C705E] hover:text-amber-300'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium ${statusFilter === 'low_stock'
+                  ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
+                  : 'text-[#8C705E] hover:text-amber-300'
+                  }`}
               >
                 Low Stock (≤10)
               </button>
               <button
                 onClick={() => setStatusFilter('out_of_stock')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium ${
-                  statusFilter === 'out_of_stock'
-                    ? 'bg-red-950/80 text-red-300 border border-red-800'
-                    : 'text-[#8C705E] hover:text-red-300'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium ${statusFilter === 'out_of_stock'
+                  ? 'bg-red-950/80 text-red-300 border border-red-800'
+                  : 'text-[#8C705E] hover:text-red-300'
+                  }`}
               >
                 Out of Stock (0)
               </button>
@@ -248,19 +243,18 @@ export default function Inventory() {
                         </td>
                         <td className="py-3.5 px-4">
                           <span
-                            className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border ${
-                              item.stock_quantity <= 0
-                                ? 'bg-red-950/80 text-red-300 border-red-800'
-                                : item.stock_quantity <= 10
+                            className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border ${item.stock_quantity <= 0
+                              ? 'bg-red-950/80 text-red-300 border-red-800'
+                              : item.stock_quantity <= 10
                                 ? 'bg-amber-950/80 text-amber-300 border-amber-800'
                                 : 'bg-emerald-950/80 text-emerald-300 border-emerald-800'
-                            }`}
+                              }`}
                           >
                             {item.stock_quantity <= 0
                               ? 'Out of Stock'
                               : item.stock_quantity <= 10
-                              ? 'Low Stock Alert'
-                              : 'Healthy Stock'}
+                                ? 'Low Stock Alert'
+                                : 'Healthy Stock'}
                           </span>
                         </td>
                         <td className="py-3.5 px-4 text-[#8C705E]">
@@ -371,11 +365,10 @@ export default function Inventory() {
                 <button
                   type="button"
                   onClick={() => setAdjustType('add')}
-                  className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all ${
-                    adjustType === 'add'
-                      ? 'bg-emerald-950 border border-emerald-700 text-emerald-300'
-                      : 'bg-[#1E140E] border border-[#332015] text-[#8C705E]'
-                  }`}
+                  className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all ${adjustType === 'add'
+                    ? 'bg-emerald-950 border border-emerald-700 text-emerald-300'
+                    : 'bg-[#1E140E] border border-[#332015] text-[#8C705E]'
+                    }`}
                 >
                   <Plus size={14} />
                   <span>Restock / Add (+)</span>
@@ -383,11 +376,10 @@ export default function Inventory() {
                 <button
                   type="button"
                   onClick={() => setAdjustType('subtract')}
-                  className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all ${
-                    adjustType === 'subtract'
-                      ? 'bg-red-950 border border-red-700 text-red-300'
-                      : 'bg-[#1E140E] border border-[#332015] text-[#8C705E]'
-                  }`}
+                  className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all ${adjustType === 'subtract'
+                    ? 'bg-red-950 border border-red-700 text-red-300'
+                    : 'bg-[#1E140E] border border-[#332015] text-[#8C705E]'
+                    }`}
                 >
                   <Minus size={14} />
                   <span>Deduct / Spoilage (-)</span>
