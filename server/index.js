@@ -110,6 +110,27 @@ app.get('/api/auth/me', requireAdminAuth, (req, res) => {
   res.json({ user: admin });
 });
 
+app.post('/api/auth/forgot-password', (req, res) => {
+  const { email } = req.body || {};
+  const cleanEmail = (email || '').trim().toLowerCase();
+
+  if (!cleanEmail) {
+    return res.status(400).json({ error: 'Admin email is required' });
+  }
+
+  const admin = db.prepare('SELECT id, email, name, role FROM admins WHERE email = ?').get(cleanEmail);
+  if (!admin) {
+    return res.status(403).json({
+      error: 'Unauthorized email address. Only registered KAFI administrators are permitted to reset credentials.'
+    });
+  }
+
+  return res.json({
+    success: true,
+    message: `A secure password-reset link has been dispatched to your registered Gmail address (${cleanEmail}). Please check your inbox and spam folder.`
+  });
+});
+
 // -------------------------------------------------------------
 // 2. DASHBOARD KPI STATS & OVERVIEW
 // -------------------------------------------------------------

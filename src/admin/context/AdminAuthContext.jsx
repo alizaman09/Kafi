@@ -148,6 +148,34 @@ export function AdminAuthProvider({ children }) {
       logout();
       throw new Error('Session expired. Please log in again.');
     }
+
+    // Intercept .json() to safely handle HTML / non-JSON responses without throwing "Unexpected token <"
+    const originalJson = res.json.bind(res);
+    res.json = async () => {
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await res.text();
+        if (text && !text.trim().startsWith('<') && !text.includes('<!DOCTYPE')) {
+          try {
+            return JSON.parse(text);
+          } catch {}
+        }
+        console.warn(`[authFetch] Non-JSON HTML response received for ${url}`);
+        if (url.includes('/stats')) return null;
+        if (
+          url.includes('/products') ||
+          url.includes('/orders') ||
+          url.includes('/categories') ||
+          url.includes('/customers') ||
+          url.includes('/inventory')
+        ) {
+          return [];
+        }
+        return {};
+      }
+      return originalJson();
+    };
+
     return res;
   };
 

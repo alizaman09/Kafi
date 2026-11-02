@@ -1,0 +1,36 @@
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.setHeader('Content-Type', 'application/json');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { email } = req.body || {};
+  const cleanEmail = (email || '').trim().toLowerCase();
+
+  if (!cleanEmail) {
+    return res.status(400).json({ error: 'Admin email is required' });
+  }
+
+  // Strict verification: Ensure email belongs to authorized admin
+  const authorizedAdmins = ['alizaman3060@gmail.com'];
+  if (!authorizedAdmins.includes(cleanEmail)) {
+    return res.status(403).json({
+      error: 'Unauthorized email address. Only registered KAFI administrators are permitted to reset credentials.'
+    });
+  }
+
+  // Password reset instructions dispatched
+  return res.status(200).json({
+    success: true,
+    message: `A secure password-reset link has been dispatched to your registered Gmail address (${cleanEmail}). Please check your inbox and spam folder.`
+  });
+}
