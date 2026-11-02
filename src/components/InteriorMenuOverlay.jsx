@@ -6,6 +6,8 @@
  * - Exactly matches the user reference image (3x3 grid, exact text & colors)
  */
 import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 import { Check, ShoppingCart, MessageSquare, Sparkles, Coffee, AlertCircle } from 'lucide-react';
 
 const COFFEE_MENU_ITEMS = [
@@ -93,36 +95,57 @@ export default function InteriorMenuOverlay({
   const [brokenImages, setBrokenImages] = useState({});
 
   useEffect(() => {
-    fetch('/api/products')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          // Check for admin localStorage overrides so custom uploads & edits show instantly
-          let overrides = {};
-          try {
-            const raw = localStorage.getItem('kafi_admin_product_overrides');
-            if (raw) overrides = JSON.parse(raw);
-          } catch (e) {}
+    async function loadStorefrontProducts() {
+      let data = [];
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) data = await res.json();
+      } catch (e) {}
 
-          const mapped = data.map((p) => {
-            const override = overrides[p.id];
-            const item = override ? { ...p, ...override } : p;
-            const exactImg = (item.images && Array.isArray(item.images) && item.images.length > 0 && item.images[0])
-              ? item.images[0]
-              : (item.id >= 1 && item.id <= 9 ? `/assets/cups/cup_clean_${item.id}.png` : null);
-            return {
-              id: item.id,
-              name: item.name,
-              price: `₱ ${item.sale_price || item.regular_price}`,
-              numericPrice: Number(item.sale_price || item.regular_price),
-              desc: item.description || 'Artisanal single origin selection.',
-              cupImg: exactImg,
-            };
+      // Attempt to load from Firebase Firestore if available
+      try {
+        const snap = await getDocs(collection(db, 'products'));
+        if (snap && !snap.empty) {
+          const fbMap = {};
+          snap.forEach(d => { fbMap[d.id] = { id: d.id, ...d.data() }; });
+          data = data.map(p => fbMap[p.id] ? { ...p, ...fbMap[p.id] } : p);
+          Object.values(fbMap).forEach(fbItem => {
+            if (!data.some(p => String(p.id) === String(fbItem.id))) data.push(fbItem);
           });
-          setMenuItems(mapped);
         }
-      })
-      .catch(() => { });
+      } catch (fbErr) {
+        console.log('[Firebase Firestore Notice]:', fbErr.message);
+      }
+
+      // Check for admin localStorage overrides so custom uploads & edits show instantly
+      let overrides = {};
+      try {
+        const raw = localStorage.getItem('kafi_admin_product_overrides');
+        if (raw) overrides = JSON.parse(raw);
+      } catch (e) {}
+
+      // If data is empty or partial, ensure all 9 original products exist as base catalog
+      const baseCatalog = (Array.isArray(data) && data.length >= 9) ? data : COFFEE_MENU_ITEMS;
+
+      const mapped = baseCatalog.map((p) => {
+        const override = overrides[p.id];
+        const item = override ? { ...p, ...override } : p;
+        const exactImg = (item.images && Array.isArray(item.images) && item.images.length > 0 && item.images[0])
+          ? item.images[0]
+          : (item.cupImg || (item.id >= 1 && item.id <= 9 ? `/assets/cups/cup_clean_${item.id}.png` : null));
+        return {
+          id: item.id,
+          name: item.name,
+          price: `₱ ${item.sale_price || item.regular_price || item.numericPrice || 150}`,
+          numericPrice: Number(item.sale_price || item.regular_price || item.numericPrice || 150),
+          desc: item.desc || item.description || 'Artisanal single origin selection.',
+          cupImg: exactImg,
+        };
+      });
+      setMenuItems(mapped);
+    }
+
+    loadStorefrontProducts();
   }, []);
 
   // Entrance & Exit curves with smooth cubic Hermite easing (zero jerky jumps)

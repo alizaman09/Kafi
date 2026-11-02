@@ -88,14 +88,16 @@ export default function HeaderNavbar({
         </div>
 
         {/* =========================================================================
-            2. RIGHT ACTIONS: CART BUTTON (FIRST) + 3-LINE HAMBURGER (SECOND)
+            2. RIGHT ACTIONS:
+               - Mobile: Cart (left) + Hamburger (right) [unchanged original layout]
+               - Laptop: Hamburger (left) + Cart (right) [swapped to opposite side]
             ========================================================================= */}
         <div ref={menuRef} className="relative flex items-center gap-2 sm:gap-2.5 pointer-events-auto">
-          {/* Cart Button */}
+          {/* Cart Button: order-1 on mobile, md:order-2 on laptop */}
           <button
             onClick={onOpenCart}
             style={{ touchAction: 'pan-y' }}
-            className="relative px-3 sm:px-4 py-1.5 min-h-[32px] sm:min-h-[36px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 shrink-0"
+            className="order-1 md:order-2 relative px-3 sm:px-4 py-1.5 min-h-[32px] sm:min-h-[36px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 shrink-0"
             title="Open Cart & Checkout"
           >
             <ShoppingCart className="w-3.5 h-3.5 text-[#3D2214]" />
@@ -107,11 +109,11 @@ export default function HeaderNavbar({
             )}
           </button>
 
-          {/* 3-line Hamburger Menu Button — Placed to the RIGHT of the Cart button */}
+          {/* 3-line Hamburger Menu Button: order-2 on mobile (right of Cart), md:order-1 on laptop (left of Cart) */}
           <button
             onClick={() => setIsMenuOpen((prev) => !prev)}
             style={{ touchAction: 'pan-y' }}
-            className={`w-8 h-8 xs:w-9 xs:h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center transition-all shadow-md shrink-0 border ${
+            className={`order-2 md:order-1 w-8 h-8 xs:w-9 xs:h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center transition-all shadow-md shrink-0 border ${
               isMenuOpen
                 ? 'bg-[#EAD18D] text-[#1A100B] border-[#EAD18D]'
                 : 'bg-[#6E4E37]/85 hover:bg-[#6E4E37] text-white border-white/25 active:scale-95'

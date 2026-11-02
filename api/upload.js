@@ -11,6 +11,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -21,12 +22,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    // If request contains json with an image string or dataUrl
-    if (req.body && req.body.image) {
-      return res.status(200).json({ urls: [req.body.image] });
+    if (req.body) {
+      if (typeof req.body === 'string') {
+        try {
+          req.body = JSON.parse(req.body);
+        } catch {}
+      }
+
+      if (req.body.image) {
+        return res.status(200).json({ urls: [req.body.image] });
+      }
+
+      if (Array.isArray(req.body.images) && req.body.images.length > 0) {
+        return res.status(200).json({ urls: req.body.images });
+      }
     }
 
-    // Default response for multipart or generic uploads
     return res.status(200).json({
       urls: [],
       message: 'Upload handler active'

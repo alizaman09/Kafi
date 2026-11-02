@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
+import { storage, db } from '../../firebase';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import {
   Coffee,
   Plus,
@@ -80,7 +83,26 @@ export default function Products() {
       let prods = await prodsRes.json();
       const cats = await catsRes.json();
 
-      // Merge local storage overrides so admin image uploads/edits persist reliably across refreshes
+      // 1. Attempt to sync with Firebase Firestore if available
+      try {
+        const snap = await getDocs(collection(db, 'products'));
+        if (snap && !snap.empty) {
+          const fbMap = {};
+          snap.forEach((d) => {
+            fbMap[d.id] = { id: d.id, ...d.data() };
+          });
+          prods = prods.map(p => fbMap[p.id] ? { ...p, ...fbMap[p.id] } : p);
+          Object.values(fbMap).forEach(fbItem => {
+            if (!prods.some(p => String(p.id) === String(fbItem.id))) {
+              prods.push(fbItem);
+            }
+          });
+        }
+      } catch (fbErr) {
+        console.log('[Firebase Firestore Notice]:', fbErr.message);
+      }
+
+      // 2. Merge local storage overrides so admin image uploads/edits persist reliably across refreshes
       try {
         const rawOverrides = localStorage.getItem('kafi_admin_product_overrides');
         if (rawOverrides) {
@@ -204,34 +226,42 @@ export default function Products() {
       // 1. Instant client-side compression to lightweight permanent Data URL
       const dataUrl = await compressImageFile(file);
 
-      // Immediately set form image & preview
+      // Immediately set form image & preview for instantaneous feedback
       setFormData(prev => ({
         ...prev,
         images: [dataUrl]
       }));
       setPreviewUrl(dataUrl);
-      setUrlSuccess('Device image selected and ready to save!');
+      setUrlSuccess('Device image selected and attached!');
 
-      // 2. Also attempt upload endpoint if server storage is active
+      // 2. Attempt real Firebase Storage upload
       try {
-        const uploadData = new FormData();
-        uploadData.append('images', file);
-        const res = await authFetch('/api/upload', {
-          method: 'POST',
-          body: uploadData
-        });
-        if (res.ok) {
-          const result = await res.json();
-          if (result.urls && result.urls.length > 0) {
-            setFormData(prev => ({
-              ...prev,
-              images: [result.urls[0]]
-            }));
-            setPreviewUrl(result.urls[0]);
-          }
+        const fileExt = file.name.split('.').pop() || 'png';
+        const sRef = storageRef(storage, `products/prod-${Date.now()}.${fileExt}`);
+        const snapshot = await uploadBytes(sRef, file);
+        const cloudDownloadUrl = await getDownloadURL(snapshot.ref);
+        if (cloudDownloadUrl) {
+          setFormData(prev => ({
+            ...prev,
+            images: [cloudDownloadUrl]
+          }));
+          setPreviewUrl(cloudDownloadUrl);
+          setUrlSuccess('Device image uploaded to Firebase Storage and attached!');
+          console.log('[Firebase Storage] Image uploaded:', cloudDownloadUrl);
         }
+      } catch (fbErr) {
+        console.log('[Firebase Storage Notice - Using permanent image data]:', fbErr.message);
+      }
+
+      // 3. Also notify /api/upload endpoint
+      try {
+        await authFetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: dataUrl })
+        });
       } catch (uploadErr) {
-        // Safe fallback: dataUrl is already set and 100% functional
+        // Safe fallback
       }
     } catch (err) {
       setUploadError(err.message || 'Image processing failed. Please try another image.');
@@ -327,19 +357,32 @@ export default function Products() {
         console.warn('API save fallback:', apiErr);
       }
 
-      // Persist in localStorage so images and details survive page refreshes
+      const prodId = editingProduct ? editingProduct.id : (savedProduct?.id || Date.now());
+      const categoryName = categories.find(c => String(c.id) === String(payload.category_id))?.name || 'Hot Coffee';
+      const completeItem = {
+        id: prodId,
+        ...payload,
+        category_name: categoryName,
+        images: payload.images
+      };
+
+      // 1. Attempt to sync to Firebase Firestore
       try {
-        const prodId = editingProduct ? editingProduct.id : (savedProduct?.id || Date.now());
-        const categoryName = categories.find(c => String(c.id) === String(payload.category_id))?.name || 'Hot Coffee';
-        const overrideData = {
-          id: prodId,
-          ...payload,
-          category_name: categoryName,
-          images: payload.images
-        };
+        const docRef = doc(db, 'products', String(prodId));
+        await setDoc(docRef, {
+          ...completeItem,
+          updated_at: new Date().toISOString()
+        }, { merge: true });
+        console.log('[Firestore] Product saved to Firebase:', prodId);
+      } catch (fbDocErr) {
+        console.log('[Firestore Notice]:', fbDocErr.message);
+      }
+
+      // 2. Persist in localStorage so images and details survive page refreshes under all network conditions
+      try {
         const raw = localStorage.getItem('kafi_admin_product_overrides');
         const overrides = raw ? JSON.parse(raw) : {};
-        overrides[prodId] = overrideData;
+        overrides[prodId] = completeItem;
         localStorage.setItem('kafi_admin_product_overrides', JSON.stringify(overrides));
       } catch (storageErr) {
         console.warn('LocalStorage save error:', storageErr);
@@ -354,7 +397,15 @@ export default function Products() {
 
   const handleDelete = async (id) => {
     try {
-      // Remove from localStorage overrides
+      // 1. Attempt to delete from Firebase Firestore
+      try {
+        await deleteDoc(doc(db, 'products', String(id)));
+        console.log('[Firestore] Product deleted from Firebase:', id);
+      } catch (fbDelErr) {
+        console.log('[Firestore Notice]:', fbDelErr.message);
+      }
+
+      // 2. Remove from localStorage overrides
       try {
         const raw = localStorage.getItem('kafi_admin_product_overrides');
         if (raw) {
