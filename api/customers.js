@@ -35,3 +35,4 @@ export default async function handler(req, res) {
     { id: 4, name: 'Hamza Sheikh', email: 'hamza@example.com', phone: '03337778899', city: 'Lahore', total_orders: 1, total_spent: 950 }
   ]);
 }
+

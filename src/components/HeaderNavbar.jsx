@@ -54,16 +54,8 @@ export default function HeaderNavbar({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const isScrolled = scrollProgress > 0.02;
-
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 pointer-events-none select-none ${
-        isScrolled
-          ? 'bg-[#1A100B]/95 backdrop-blur-md border-b border-white/10 shadow-[0_6px_25px_rgba(0,0,0,0.7)] py-2 sm:py-2.5'
-          : 'bg-[#1A100B]/85 backdrop-blur-md border-b border-white/5 py-2.5 sm:py-3'
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 w-full py-2.5 sm:py-3 pointer-events-none select-none transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between">
         {/* =========================================================================
             1. BRAND: KAFI GULBERG LOGO (Clean dark backing, zero image clutter)
@@ -96,10 +88,26 @@ export default function HeaderNavbar({
         </div>
 
         {/* =========================================================================
-            2. RIGHT ACTIONS: 3-LINE HAMBURGER (LEFT) + CART BUTTON (RIGHT)
+            2. RIGHT ACTIONS: CART BUTTON (FIRST) + 3-LINE HAMBURGER (SECOND)
             ========================================================================= */}
         <div ref={menuRef} className="relative flex items-center gap-2 sm:gap-2.5 pointer-events-auto">
-          {/* 3-line Hamburger Menu Button — Placed immediately to the LEFT of the Cart button */}
+          {/* Cart Button */}
+          <button
+            onClick={onOpenCart}
+            style={{ touchAction: 'pan-y' }}
+            className="relative px-3 sm:px-4 py-1.5 min-h-[32px] sm:min-h-[36px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 shrink-0"
+            title="Open Cart & Checkout"
+          >
+            <ShoppingCart className="w-3.5 h-3.5 text-[#3D2214]" />
+            <span>Cart</span>
+            {cartCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-[#3D2214] text-[#EAD18D] text-[9px] sm:text-[10px] font-mono font-black shadow-sm">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
+          {/* 3-line Hamburger Menu Button — Placed to the RIGHT of the Cart button */}
           <button
             onClick={() => setIsMenuOpen((prev) => !prev)}
             style={{ touchAction: 'pan-y' }}
@@ -116,22 +124,6 @@ export default function HeaderNavbar({
               <X className="w-4 h-4 xs:w-4.5 xs:h-4.5 stroke-[2.5]" />
             ) : (
               <Menu className="w-4 h-4 xs:w-4.5 xs:h-4.5 stroke-[2.5]" />
-            )}
-          </button>
-
-          {/* Cart Button */}
-          <button
-            onClick={onOpenCart}
-            style={{ touchAction: 'pan-y' }}
-            className="relative px-3 sm:px-4 py-1.5 min-h-[32px] sm:min-h-[36px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 shrink-0"
-            title="Open Cart & Checkout"
-          >
-            <ShoppingCart className="w-3.5 h-3.5 text-[#3D2214]" />
-            <span>Cart</span>
-            {cartCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#3D2214] text-[#EAD18D] text-[9px] sm:text-[10px] font-mono font-black shadow-sm">
-                {cartCount}
-              </span>
             )}
           </button>
 

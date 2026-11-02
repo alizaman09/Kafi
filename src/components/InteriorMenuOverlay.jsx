@@ -97,16 +97,25 @@ export default function InteriorMenuOverlay({
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
+          // Check for admin localStorage overrides so custom uploads & edits show instantly
+          let overrides = {};
+          try {
+            const raw = localStorage.getItem('kafi_admin_product_overrides');
+            if (raw) overrides = JSON.parse(raw);
+          } catch (e) {}
+
           const mapped = data.map((p) => {
-            const exactImg = (p.images && Array.isArray(p.images) && p.images.length > 0 && p.images[0])
-              ? p.images[0]
-              : null;
+            const override = overrides[p.id];
+            const item = override ? { ...p, ...override } : p;
+            const exactImg = (item.images && Array.isArray(item.images) && item.images.length > 0 && item.images[0])
+              ? item.images[0]
+              : (item.id >= 1 && item.id <= 9 ? `/assets/cups/cup_clean_${item.id}.png` : null);
             return {
-              id: p.id,
-              name: p.name,
-              price: `PKR ${p.sale_price || p.regular_price}`,
-              numericPrice: Number(p.sale_price || p.regular_price),
-              desc: p.description || 'Artisanal single origin selection.',
+              id: item.id,
+              name: item.name,
+              price: `₱ ${item.sale_price || item.regular_price}`,
+              numericPrice: Number(item.sale_price || item.regular_price),
+              desc: item.description || 'Artisanal single origin selection.',
               cupImg: exactImg,
             };
           });

@@ -71,12 +71,19 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
     <div
       style={{
         opacity: heroOpacity,
-        willChange: 'opacity',
+        willChange: 'opacity, transform',
+        transform: 'translateZ(0)',
+        height: '100svh',
+        minHeight: '100svh',
+        maxHeight: '100svh',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-16 sm:pt-20 p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 w-full overflow-hidden no-scrollbar"
+      className="fixed top-0 left-0 right-0 z-30 pointer-events-none flex flex-col justify-between pt-16 sm:pt-20 p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 w-full overflow-hidden no-scrollbar"
     >
       {/* Translucent Warm Coffee Ambient Veil allowing background animation to show */}
-      <div className="fixed inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[1px]" />
+      <div
+        style={{ height: '100svh', transform: 'translateZ(0)' }}
+        className="fixed top-0 left-0 right-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[1px]"
+      />
 
       {/* =========================================================================
           MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop

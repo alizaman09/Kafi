@@ -40,3 +40,4 @@ export default async function handler(req, res) {
     { id: 4, name: 'Bakery & Treats', slug: 'bakery-treats', product_count: 0 }
   ]);
 }
+

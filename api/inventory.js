@@ -39,3 +39,4 @@ export default async function handler(req, res) {
     { id: 3, name: 'Cold Brew Reserve', sku: 'KF-CBD-003', stock_quantity: 18, status: 'in_stock', category_name: 'Cold Brew & Iced' }
   ]);
 }
+

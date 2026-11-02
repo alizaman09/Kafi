@@ -21,10 +21,7 @@ export default function Storefront() {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       if (maxScroll > 0) {
         const rawProgress = Math.max(0, Math.min(1, scrollY / maxScroll));
-        setScrollProgress((prev) => {
-          if (Math.abs(rawProgress - prev) < 0.003) return prev;
-          return rawProgress;
-        });
+        setScrollProgress((prev) => (rawProgress === prev ? prev : rawProgress));
       }
       ticking = false;
     };

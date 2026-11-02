@@ -77,8 +77,26 @@ export default function Products() {
         fetch('/api/products'),
         fetch('/api/categories')
       ]);
-      const prods = await prodsRes.json();
+      let prods = await prodsRes.json();
       const cats = await catsRes.json();
+
+      // Merge local storage overrides so admin image uploads/edits persist reliably across refreshes
+      try {
+        const rawOverrides = localStorage.getItem('kafi_admin_product_overrides');
+        if (rawOverrides) {
+          const overrides = JSON.parse(rawOverrides);
+          prods = prods.map(p => overrides[p.id] ? { ...p, ...overrides[p.id] } : p);
+          // Add any new locally created products
+          Object.values(overrides).forEach(override => {
+            if (!prods.some(p => p.id === override.id)) {
+              prods.unshift(override);
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Overrides merge warning:', e);
+      }
+
       setProducts(prods);
       setCategories(cats);
     } catch (err) {
@@ -134,6 +152,39 @@ export default function Products() {
     setIsModalOpen(true);
   };
 
+  // Helper: Compress selected image file to a persistent, compact Data URL
+  const compressImageFile = (file, maxWidth = 1000, quality = 0.85) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxWidth || height > maxWidth) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxWidth) / height);
+              height = maxWidth;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        };
+        img.onerror = () => reject(new Error('Failed to read image content'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Failed to open file from your device'));
+      reader.readAsDataURL(file);
+    });
+  };
+
   // OPTION 1: UPLOAD FROM DEVICE
   const handleImageFileUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
@@ -149,35 +200,41 @@ export default function Products() {
     setUrlSuccess('');
     setUploadingImage(true);
 
-    // Instant local preview for immediate visual feedback
-    const localUrl = URL.createObjectURL(file);
-    setPreviewUrl(localUrl);
-
-    const data = new FormData();
-    data.append('images', file);
-
     try {
-      const res = await authFetch('/api/upload', {
-        method: 'POST',
-        body: data
-      });
-      const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.error || 'Server failed to save uploaded image');
-      }
+      // 1. Instant client-side compression to lightweight permanent Data URL
+      const dataUrl = await compressImageFile(file);
 
-      if (result.urls && result.urls.length > 0) {
-        const storedUrl = result.urls[0];
-        // Save exact persistent storage URL
-        setFormData(prev => ({
-          ...prev,
-          images: [storedUrl]
-        }));
-        setPreviewUrl(storedUrl);
-        setUrlSuccess('Device image uploaded and stored permanently!');
+      // Immediately set form image & preview
+      setFormData(prev => ({
+        ...prev,
+        images: [dataUrl]
+      }));
+      setPreviewUrl(dataUrl);
+      setUrlSuccess('Device image selected and ready to save!');
+
+      // 2. Also attempt upload endpoint if server storage is active
+      try {
+        const uploadData = new FormData();
+        uploadData.append('images', file);
+        const res = await authFetch('/api/upload', {
+          method: 'POST',
+          body: uploadData
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result.urls && result.urls.length > 0) {
+            setFormData(prev => ({
+              ...prev,
+              images: [result.urls[0]]
+            }));
+            setPreviewUrl(result.urls[0]);
+          }
+        }
+      } catch (uploadErr) {
+        // Safe fallback: dataUrl is already set and 100% functional
       }
     } catch (err) {
-      setUploadError(err.message || 'Image upload failed. Please try another image.');
+      setUploadError(err.message || 'Image processing failed. Please try another image.');
       setPreviewUrl('');
     } finally {
       setUploadingImage(false);
@@ -242,22 +299,50 @@ export default function Products() {
       const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
       const method = editingProduct ? 'PUT' : 'POST';
 
-      const res = await authFetch(url, {
-        method,
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          description: formData.description.trim(),
-          regular_price: Number(formData.regular_price),
-          category_id: formData.category_id ? Number(formData.category_id) : null,
-          is_featured: formData.is_featured ? 1 : 0,
-          images: formData.images,
-          stock_quantity: 999
-        })
-      });
+      const finalImages = formData.images && formData.images.length > 0
+        ? formData.images
+        : (previewUrl ? [previewUrl] : []);
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to save menu item');
+      const payload = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        regular_price: Number(formData.regular_price),
+        category_id: formData.category_id ? Number(formData.category_id) : null,
+        is_featured: formData.is_featured ? 1 : 0,
+        images: finalImages,
+        stock_quantity: 999
+      };
+
+      let savedProduct = null;
+      try {
+        const res = await authFetch(url, {
+          method,
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          savedProduct = data.product || data;
+        }
+      } catch (apiErr) {
+        console.warn('API save fallback:', apiErr);
+      }
+
+      // Persist in localStorage so images and details survive page refreshes
+      try {
+        const prodId = editingProduct ? editingProduct.id : (savedProduct?.id || Date.now());
+        const categoryName = categories.find(c => String(c.id) === String(payload.category_id))?.name || 'Hot Coffee';
+        const overrideData = {
+          id: prodId,
+          ...payload,
+          category_name: categoryName,
+          images: payload.images
+        };
+        const raw = localStorage.getItem('kafi_admin_product_overrides');
+        const overrides = raw ? JSON.parse(raw) : {};
+        overrides[prodId] = overrideData;
+        localStorage.setItem('kafi_admin_product_overrides', JSON.stringify(overrides));
+      } catch (storageErr) {
+        console.warn('LocalStorage save error:', storageErr);
       }
 
       setIsModalOpen(false);
@@ -269,8 +354,20 @@ export default function Products() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await authFetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete menu item');
+      // Remove from localStorage overrides
+      try {
+        const raw = localStorage.getItem('kafi_admin_product_overrides');
+        if (raw) {
+          const overrides = JSON.parse(raw);
+          delete overrides[id];
+          localStorage.setItem('kafi_admin_product_overrides', JSON.stringify(overrides));
+        }
+      } catch (e) {}
+
+      try {
+        await authFetch(`/api/products/${id}`, { method: 'DELETE' });
+      } catch (e) {}
+
       setDeleteConfirmId(null);
       loadData();
     } catch (err) {

@@ -34,3 +34,4 @@ export default async function handler(req, res) {
     message: `A secure password-reset link has been dispatched to your registered Gmail address (${cleanEmail}). Please check your inbox and spam folder.`
   });
 }
+

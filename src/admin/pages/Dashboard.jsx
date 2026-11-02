@@ -376,11 +376,10 @@ export default function Dashboard() {
                       <p className="text-[10px] text-[#8A6F5D] font-mono">{prod.sku}</p>
                     </div>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-lg font-bold ${
-                        prod.stock_quantity <= 0
+                      className={`text-xs px-2 py-0.5 rounded-lg font-bold ${prod.stock_quantity <= 0
                           ? 'bg-red-950/80 text-red-300 border border-red-800'
                           : 'bg-amber-950/80 text-amber-300 border border-amber-800'
-                      }`}
+                        }`}
                     >
                       {prod.stock_quantity} left
                     </span>
@@ -467,9 +466,8 @@ export default function Dashboard() {
                       </td>
                       <td className="py-3.5 px-4">
                         <span
-                          className={`text-[11px] px-2.5 py-0.5 rounded-full border font-medium ${
-                            statusColors[ord.order_status] || 'bg-neutral-800 text-neutral-300 border-neutral-700'
-                          }`}
+                          className={`text-[11px] px-2.5 py-0.5 rounded-full border font-medium ${statusColors[ord.order_status] || 'bg-neutral-800 text-neutral-300 border-neutral-700'
+                            }`}
                         >
                           {ord.order_status}
                         </span>
