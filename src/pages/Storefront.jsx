@@ -117,7 +117,7 @@ export default function Storefront() {
       }}
     >
       {/* 1. Underlying 300-Frame Scrollytelling Animation (Pinned Fullscreen Canvas) */}
-      <CanvasSequence totalFrames={300} lerpFactor={0.06} />
+      <CanvasSequence totalFrames={300} lerpFactor={0.08} scrollProgress={scrollProgress} />
 
       {/* 2. Hero Section: Clean, compact 1-screen viewport design */}
       <HeroInspiration

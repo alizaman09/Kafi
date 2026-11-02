@@ -11,7 +11,7 @@ export const TOTAL_FRAMES = 300;
  */
 export function getFrameUrl(frameNumber) {
   const paddedIndex = String(Math.max(1, Math.min(TOTAL_FRAMES, frameNumber))).padStart(3, '0');
-  return `/frames/ezgif-frame-${paddedIndex}.png`;
+  return `/frames/ezgif-frame-${paddedIndex}.webp`;
 }
 
 /**
