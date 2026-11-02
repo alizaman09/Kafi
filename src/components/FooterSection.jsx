@@ -31,11 +31,12 @@ export default function FooterSection({
 
   return (
     <div
+      id="footer-section"
       style={{
         opacity,
         willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-3 sm:pt-6 md:pt-8 overflow-hidden transition-opacity duration-200 no-scrollbar select-none"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-16 sm:pt-20 overflow-hidden transition-opacity duration-200 no-scrollbar select-none"
     >
       {/* 1. Grand Atmospheric "KAFI" Showcase Title in Upper Screen Area */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-auto text-center flex flex-col items-center justify-center py-6 sm:py-10">

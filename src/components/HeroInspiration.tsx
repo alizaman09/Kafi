@@ -16,11 +16,7 @@ import {
   Flame,
   Sparkles,
   ArrowRight,
-  Check,
-  Menu,
-  X,
-  Info,
-  Home
+  Check
 } from 'lucide-react';
 
 interface HeroInspirationProps {
@@ -41,7 +37,6 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
   scrollProgress = 0,
 }) => {
   const [likedCard, setLikedCard] = useState<number | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleCardAdd = (id: number) => {
     if (onAddToCart) {
@@ -78,151 +73,13 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         opacity: heroOpacity,
         willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 w-full overflow-hidden no-scrollbar"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between pt-16 sm:pt-20 p-2 sm:p-3 md:p-4 pb-2 sm:pb-3 md:pb-4 w-full overflow-hidden no-scrollbar"
     >
       {/* Translucent Warm Coffee Ambient Veil allowing background animation to show */}
       <div className="fixed inset-0 pointer-events-none bg-gradient-to-br from-[#6E4E37]/45 via-[#6E4E37]/30 to-[#6E4E37]/20 backdrop-blur-[1px]" />
 
       {/* =========================================================================
-          1. HEADER / NAVIGATION BAR — Warm Coffee Frosted Capsule & Pure White Text
-          ========================================================================= */}
-      <header className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between py-1 sm:py-1.5 pointer-events-none shrink-0">
-        {/* Brand: KAFI GULBERG */}
-        <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-none">
-          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#1C0F08] border border-white/30 flex items-center justify-center text-[#F5EFEB] shadow-md shrink-0">
-            <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EAD18D]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="font-serif text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                KAFI
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EAD18D]" />
-              <span className="text-[9.5px] xs:text-[11px] sm:text-xs md:text-sm font-mono tracking-widest text-[#EAD18D] font-black uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-                Gulberg
-              </span>
-            </div>
-            <p className="text-[8px] xs:text-[9.5px] sm:text-xs text-[#F5EFEB]/90 font-sans font-semibold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-              Specialty Coffee & Roastery
-            </p>
-          </div>
-        </div>
-
-        {/* Center Nav Links — #6E4E37 Frosted Capsule with Pure White Text (Desktop only) */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-6 px-4 py-1.5 rounded-full bg-[#6E4E37]/65 hover:bg-[#6E4E37]/80 backdrop-blur-md border border-white/25 shadow-[0_6px_25px_rgba(0,0,0,0.25)] transition-all pointer-events-auto" style={{ touchAction: 'pan-y' }}>
-          <a
-            href="#home"
-            className="text-xs lg:text-[13px] font-black tracking-wide text-white relative after:content-[''] after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-[2px] after:bg-white hover:scale-105 transition-all drop-shadow-sm"
-          >
-            Home
-          </a>
-          <button
-            onClick={onOpenMenu}
-            className="text-xs lg:text-[13px] font-black tracking-wide text-white/90 hover:text-[#EAD18D] hover:scale-105 active:scale-95 transition-all drop-shadow-sm"
-          >
-            Coffee Menu
-          </button>
-          <a
-            href="#about"
-            className="text-xs lg:text-[13px] font-black tracking-wide text-white/90 hover:text-[#EAD18D] hover:scale-105 active:scale-95 transition-all drop-shadow-sm"
-          >
-            About Us
-          </a>
-          <a
-            href="#contact"
-            className="text-xs lg:text-[13px] font-black tracking-wide text-white/90 hover:text-[#EAD18D] hover:scale-105 active:scale-95 transition-all drop-shadow-sm"
-          >
-            Contact us
-          </a>
-        </nav>
-
-        {/* Right Actions: Cart Button first, then Mobile Hamburger Menu on the far right */}
-        <div className="relative flex items-center gap-1.5 sm:gap-2 pointer-events-none">
-          {/* Cart Button (Comes first) */}
-          <button
-            onClick={onOpenCart}
-            style={{ touchAction: 'pan-y' }}
-            className="pointer-events-auto relative px-2.5 sm:px-4 py-1 sm:py-1.5 min-h-[30px] rounded-full bg-white hover:bg-[#FAF6F0] text-[#3D2214] text-[11px] sm:text-xs font-black tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1 sm:gap-1.5 shrink-0"
-            title="Open Cart & Checkout"
-          >
-            <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#3D2214]" />
-            <span>Cart</span>
-            {cartCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#3D2214] text-[#EAD18D] text-[9px] sm:text-[10px] font-mono font-black shadow-sm">
-                {cartCount}
-              </span>
-            )}
-          </button>
-
-          {/* Hamburger Menu Icon Button on Mobile (Far Right) */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{ touchAction: 'pan-y' }}
-            className="pointer-events-auto md:hidden w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-[#6E4E37]/85 hover:bg-[#6E4E37] border border-white/25 text-white flex items-center justify-center active:scale-95 transition-all shadow-md shrink-0"
-            aria-label="Toggle navigation menu"
-            title="Toggle Menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
-            ) : (
-              <Menu className="w-4 h-4 xs:w-4.5 xs:h-4.5 text-white stroke-[2.5]" />
-            )}
-          </button>
-
-          {/* Mobile Navigation Dropdown Menu: Home, Menu, Details */}
-          {isMobileMenuOpen && (
-            <div
-              className="absolute top-full right-0 mt-2 w-48 rounded-2xl bg-[#1C0F08]/95 backdrop-blur-xl border border-white/20 shadow-2xl p-2 z-50 flex flex-col gap-1 pointer-events-auto"
-            >
-              {/* 1. Home */}
-              <button
-                onClick={() => {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
-              >
-                <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
-                  <Home className="w-3.5 h-3.5" />
-                </div>
-                <span>Home</span>
-              </button>
-
-              {/* 2. Menu */}
-              <button
-                onClick={() => {
-                  if (onOpenMenu) onOpenMenu();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
-              >
-                <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
-                  <Coffee className="w-3.5 h-3.5" />
-                </div>
-                <span>Menu</span>
-              </button>
-
-              {/* 3. Details */}
-              <button
-                onClick={() => {
-                  const el = document.getElementById('footer-section');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-white hover:bg-[#6E4E37]/60 active:bg-[#6E4E37] transition-all"
-              >
-                <div className="w-7 h-7 rounded-lg bg-[#6E4E37]/50 border border-white/10 flex items-center justify-center text-[#EAD18D]">
-                  <Info className="w-3.5 h-3.5" />
-                </div>
-                <span>Details</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* =========================================================================
-          2. MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
+          MAIN HERO BODY — Compact, Fluid & Responsive for Mobile to Desktop
           ========================================================================= */}
       <div className="relative z-10 w-full max-w-7xl mx-auto my-auto py-1 sm:py-1.5 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center pointer-events-none">
 

@@ -159,11 +159,12 @@ export default function InteriorMenuOverlay({
 
   return (
     <div
+      id="menu-section"
       style={{
         opacity,
         willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col items-center justify-start overflow-hidden p-2 sm:p-4 pt-10 xs:pt-12 sm:pt-14 pb-12 sm:pb-20 select-none"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col items-center justify-start overflow-hidden p-2 sm:p-4 pt-14 xs:pt-16 sm:pt-16 pb-12 sm:pb-20 select-none"
     >
       {/* Parent section holding the menu cards is transparent so background animation is fully visible */}
       <div

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import HeaderNavbar from '../components/HeaderNavbar';
 import CanvasSequence from '../components/CanvasSequence';
 import HeroInspiration from '../components/HeroInspiration';
 import InteriorMenuOverlay from '../components/InteriorMenuOverlay';
@@ -41,6 +42,13 @@ export default function Storefront() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleScrollToHome = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   const handleScrollToMenu = () => {
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     if (maxScroll > 0) {
@@ -50,6 +58,16 @@ export default function Storefront() {
       });
     } else {
       setIsMenuOpen(true);
+    }
+  };
+
+  const handleScrollToDetails = () => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll > 0) {
+      window.scrollTo({
+        top: maxScroll * 0.95,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -116,6 +134,16 @@ export default function Storefront() {
         backgroundColor: 'var(--theme-bg-color, #1A100B)',
       }}
     >
+      {/* 0. Persistent Fixed Header & Navigation (Always fixed at top, 3-line hamburger immediately left of Cart) */}
+      <HeaderNavbar
+        cartCount={totalCartCount}
+        onOpenCart={() => setIsCartOpen(true)}
+        onScrollToHome={handleScrollToHome}
+        onScrollToMenu={handleScrollToMenu}
+        onScrollToDetails={handleScrollToDetails}
+        scrollProgress={scrollProgress}
+      />
+
       {/* 1. Underlying 300-Frame Scrollytelling Animation (Pinned Fullscreen Canvas) */}
       <CanvasSequence totalFrames={300} lerpFactor={0.08} scrollProgress={scrollProgress} />
 
