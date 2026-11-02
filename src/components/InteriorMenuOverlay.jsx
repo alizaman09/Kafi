@@ -192,17 +192,17 @@ export default function InteriorMenuOverlay({
               <div
                 key={item.id}
                 style={{ touchAction: 'pan-y' }}
-                className="group relative bg-[#3D251A]/85 hover:bg-[#4A2E20]/90 backdrop-blur-md border border-[#EAD18D]/30 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_6px_18px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_24px_rgba(234,209,141,0.25)] transition-all duration-200 pointer-events-auto"
+                className="group relative bg-[#341F14]/90 hover:bg-[#4A2E20]/95 md:backdrop-blur-md border border-[#EAD18D]/30 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_6px_18px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_24px_rgba(234,209,141,0.25)] transition-all duration-200 pointer-events-none"
               >
                 {/* Centered Product Image Container - Larger & Perfectly Visible */}
-                <div className="w-[44px] h-[44px] xs:w-[50px] xs:h-[50px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] flex items-center justify-center mx-auto mb-1 sm:mb-1.5 shrink-0 overflow-visible">
-                  <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)]">
+                <div className="w-[44px] h-[44px] xs:w-[50px] xs:h-[50px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] flex items-center justify-center mx-auto mb-1 sm:mb-1.5 shrink-0 overflow-visible pointer-events-none">
+                  <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)] pointer-events-none">
                     {item.cupImg && !brokenImages[item.id] ? (
                       <img
                         src={item.cupImg}
                         alt={item.name}
                         onError={() => setBrokenImages((prev) => ({ ...prev, [item.id]: true }))}
-                        className="w-full h-full object-contain select-none"
+                        className="w-full h-full object-contain select-none pointer-events-none"
                       />
                     ) : brokenImages[item.id] ? (
                       <div className="px-1.5 py-0.5 rounded bg-red-950/70 border border-red-500/30 text-[7px] xs:text-[8px] sm:text-[9px] text-red-200 flex items-center gap-1 shadow-sm">
@@ -218,24 +218,25 @@ export default function InteriorMenuOverlay({
                 </div>
 
                 {/* Price in Crisp Warm Caramel Gold */}
-                <div className="font-mono font-extrabold text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm text-[#F3D68E] tracking-wider mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                <div className="font-mono font-extrabold text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm text-[#F3D68E] tracking-wider mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] pointer-events-none">
                   {item.price}
                 </div>
 
                 {/* Title in Crisp Pure White Modern Sans */}
-                <h3 className="font-sans font-black text-[9.5px] xs:text-[10.5px] sm:text-xs md:text-[13px] text-white tracking-wide uppercase leading-tight mb-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-1">
+                <h3 className="font-sans font-black text-[9.5px] xs:text-[10.5px] sm:text-xs md:text-[13px] text-white tracking-wide uppercase leading-tight mb-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-1 pointer-events-none">
                   {item.name}
                 </h3>
 
                 {/* Subtitle / Description */}
-                <p className="font-sans text-[7.5px] xs:text-[8px] sm:text-[9px] md:text-[9.5px] text-[#D8CFBF] leading-tight line-clamp-1 sm:line-clamp-2 max-w-[170px] mb-1 sm:mb-1.5 font-medium">
+                <p className="font-sans text-[7.5px] xs:text-[8px] sm:text-[9px] md:text-[9.5px] text-[#D8CFBF] leading-tight line-clamp-1 sm:line-clamp-2 max-w-[170px] mb-1 sm:mb-1.5 font-medium pointer-events-none">
                   {item.desc}
                 </p>
 
                 {/* Pill "+ Add to cart" Button */}
                 <button
                   onClick={() => handleToggle(item)}
-                  className={`w-full max-w-[80px] xs:max-w-[90px] sm:max-w-[105px] min-h-[24px] xs:min-h-[26px] sm:min-h-[30px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-sans font-extrabold text-[8.5px] xs:text-[9.5px] sm:text-[10.5px] tracking-wide shadow-md transition-all flex items-center justify-center gap-1 active:scale-95 ${
+                  style={{ touchAction: 'pan-y' }}
+                  className={`pointer-events-auto w-full max-w-[80px] xs:max-w-[90px] sm:max-w-[105px] min-h-[24px] xs:min-h-[26px] sm:min-h-[30px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-sans font-extrabold text-[8.5px] xs:text-[9.5px] sm:text-[10.5px] tracking-wide shadow-md transition-all flex items-center justify-center gap-1 active:scale-95 ${
                     isAdded
                       ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                       : 'bg-[#FDFBF7] hover:bg-white text-[#24150E] hover:scale-105'

@@ -26,6 +26,14 @@ html, body {
     overscroll-behavior-y: none;
   }
 
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: pan-y;
+  }
+
   /* Custom Luxury Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;

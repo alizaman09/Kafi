@@ -307,33 +307,34 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           {/* Card 1: Americano Latte — Enlarged Prominent Coffee Cup Image */}
           <div
             style={{ touchAction: 'pan-y' }}
-            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-auto"
+            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 md:backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-none"
           >
-            <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
-              <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm">
+            <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1 pointer-events-none">
+              <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm pointer-events-none">
                 <img
                   src="/assets/glass_latte.png"
                   alt="Iced Spanish Latte"
-                  className="w-8 xs:w-10 sm:w-12 h-auto max-h-[88%] object-contain drop-shadow-md select-none"
+                  className="w-8 xs:w-10 sm:w-12 h-auto max-h-[88%] object-contain drop-shadow-md select-none pointer-events-none"
                 />
               </div>
             </div>
 
-            <div className="text-left px-0.5">
-              <h3 className="font-sans text-[10px] xs:text-[11px] sm:text-xs md:text-[13px] font-extrabold tracking-wide text-white uppercase leading-snug drop-shadow-sm truncate">
+            <div className="text-left px-0.5 pointer-events-none">
+              <h3 className="font-sans text-[10px] xs:text-[11px] sm:text-xs md:text-[13px] font-extrabold tracking-wide text-white uppercase leading-snug drop-shadow-sm truncate pointer-events-none">
                 Americano Latte
               </h3>
-              <p className="text-[7.5px] xs:text-[8px] sm:text-[9px] text-white/85 font-sans font-medium mb-1 leading-snug truncate">
+              <p className="text-[7.5px] xs:text-[8px] sm:text-[9px] text-white/85 font-sans font-medium mb-1 leading-snug truncate pointer-events-none">
                 100% Arabica, 350 ml
               </p>
             </div>
 
-            <div className="flex items-center justify-between px-0.5 pt-1 border-t border-white/20">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center justify-between px-0.5 pt-1 border-t border-white/20 pointer-events-none">
+              <div className="flex items-center gap-1 pointer-events-auto">
                 <button
                   onClick={() => handleCardAdd(1)}
                   title="Add Americano Latte to Cart"
-                  className={`p-1 rounded-full border transition-colors ${cart['americano-latte']
+                  style={{ touchAction: 'pan-y' }}
+                  className={`pointer-events-auto p-1 rounded-full border transition-colors ${cart['americano-latte']
                     ? 'bg-emerald-500 text-white border-emerald-400'
                     : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
@@ -342,7 +343,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 </button>
                 <button
                   onClick={() => setLikedCard(likedCard === 1 ? null : 1)}
-                  className={`p-1 rounded-full border transition-colors ${likedCard === 1
+                  style={{ touchAction: 'pan-y' }}
+                  className={`pointer-events-auto p-1 rounded-full border transition-colors ${likedCard === 1
                     ? 'bg-red-500/80 text-white border-red-400'
                     : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
@@ -350,7 +352,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                   <Heart className={`w-2.5 h-2.5 ${likedCard === 1 ? 'fill-red-400' : ''}`} />
                 </button>
               </div>
-              <span className="px-1.5 py-0.5 rounded-full bg-[#1C0F08] text-white text-[8.5px] sm:text-[9.5px] font-black tracking-wide border border-white/20">
+              <span className="px-1.5 py-0.5 rounded-full bg-[#1C0F08] text-white text-[8.5px] sm:text-[9.5px] font-black tracking-wide border border-white/20 pointer-events-none">
                 $2.50
               </span>
             </div>
@@ -359,33 +361,34 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           {/* Card 2: Ceremonial Matcha — Enlarged Prominent Coffee Cup Image */}
           <div
             style={{ touchAction: 'pan-y' }}
-            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-auto"
+            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 md:backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-none"
           >
-            <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1">
-              <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm">
+            <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1 pointer-events-none">
+              <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm pointer-events-none">
                 <img
                   src="/assets/glass_matcha.png"
                   alt="Ceremonial Iced Matcha"
-                  className="w-8 xs:w-10 sm:w-12 h-auto max-h-[88%] object-contain drop-shadow-md select-none"
+                  className="w-8 xs:w-10 sm:w-12 h-auto max-h-[88%] object-contain drop-shadow-md select-none pointer-events-none"
                 />
               </div>
             </div>
 
-            <div className="text-left px-0.5">
-              <h3 className="font-sans text-[10px] xs:text-[11px] sm:text-xs md:text-[13px] font-extrabold tracking-wide text-white uppercase leading-snug drop-shadow-sm truncate">
+            <div className="text-left px-0.5 pointer-events-none">
+              <h3 className="font-sans text-[10px] xs:text-[11px] sm:text-xs md:text-[13px] font-extrabold tracking-wide text-white uppercase leading-snug drop-shadow-sm truncate pointer-events-none">
                 Ceremonial Matcha
               </h3>
-              <p className="text-[7.5px] xs:text-[8px] sm:text-[9px] text-white/85 font-sans font-medium mb-1 leading-snug truncate">
+              <p className="text-[7.5px] xs:text-[8px] sm:text-[9px] text-white/85 font-sans font-medium mb-1 leading-snug truncate pointer-events-none">
                 Uji Matcha, oat milk
               </p>
             </div>
 
-            <div className="flex items-center justify-between px-0.5 pt-1 border-t border-white/20">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center justify-between px-0.5 pt-1 border-t border-white/20 pointer-events-none">
+              <div className="flex items-center gap-1 pointer-events-auto">
                 <button
                   onClick={() => handleCardAdd(2)}
                   title="Add Ceremonial Matcha to Cart"
-                  className={`p-1 rounded-full border transition-colors ${cart['ceremonial-matcha']
+                  style={{ touchAction: 'pan-y' }}
+                  className={`pointer-events-auto p-1 rounded-full border transition-colors ${cart['ceremonial-matcha']
                     ? 'bg-emerald-500 text-white border-emerald-400'
                     : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
@@ -394,7 +397,8 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                 </button>
                 <button
                   onClick={() => setLikedCard(likedCard === 2 ? null : 2)}
-                  className={`p-1 rounded-full border transition-colors ${likedCard === 2
+                  style={{ touchAction: 'pan-y' }}
+                  className={`pointer-events-auto p-1 rounded-full border transition-colors ${likedCard === 2
                     ? 'bg-red-500/80 text-white border-red-400'
                     : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                     }`}
@@ -402,7 +406,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
                   <Heart className={`w-2.5 h-2.5 ${likedCard === 2 ? 'fill-red-400' : ''}`} />
                 </button>
               </div>
-              <span className="px-1.5 py-0.5 rounded-full bg-[#1C0F08] text-white text-[8.5px] sm:text-[9.5px] font-black tracking-wide border border-white/20">
+              <span className="px-1.5 py-0.5 rounded-full bg-[#1C0F08] text-white text-[8.5px] sm:text-[9.5px] font-black tracking-wide border border-white/20 pointer-events-none">
                 $2.50
               </span>
             </div>

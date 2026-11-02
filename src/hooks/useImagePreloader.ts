@@ -89,8 +89,8 @@ export function useImagePreloader({
       }
     });
 
-    // 2. Preload first 5 frames immediately for smooth initial motion
-    for (let i = 2; i <= Math.min(5, totalFrames); i++) {
+    // 2. Preload first 10 frames immediately for smooth initial motion
+    for (let i = 2; i <= Math.min(10, totalFrames); i++) {
       loadFrame(i, frameUrlPattern);
     }
 
@@ -125,8 +125,8 @@ export function useImagePreloader({
       if (Math.abs(frameNum - lastRequestedRef.current) < 2) return;
       lastRequestedRef.current = frameNum;
 
-      // Fetch immediate surrounding frames
-      for (let offset = 0; offset <= 3; offset++) {
+      // Fetch immediate surrounding frames (expanded window for ultra-smooth scrubbing)
+      for (let offset = 0; offset <= 5; offset++) {
         const ahead = frameNum + offset;
         const behind = frameNum - offset;
         if (ahead <= totalFrames) loadFrame(ahead, frameUrlPattern);

@@ -34,6 +34,14 @@ body {
     text-rendering: optimizeLegibility;
   }
 
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: pan-y;
+  }
+
   /* Smooth GPU layer acceleration */
   .gpu-accelerated {
     transform: translateZ(0);

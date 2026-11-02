@@ -58,10 +58,10 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
 
   const currentFrameRef = useRef<number>(0);
   const targetFrameRef = useRef<number>(0);
-  const lastDrawnFrameRef = useRef<number>(-1);
+  const lastDrawnImgRef = useRef<HTMLImageElement | null>(null);
+  const lastDrawnIndexRef = useRef<number>(-1);
   const lastValidImgRef = useRef<HTMLImageElement | null>(null);
   const rafIdRef = useRef<number | null>(null);
-  const isAnimatingRef = useRef<boolean>(false);
 
   /**
    * High-performance single-pass frame renderer
@@ -77,14 +77,15 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
       const clamped = Math.max(0, Math.min(totalFrames - 1, frameFloat));
       const targetIndex = Math.round(clamped);
 
-      // Avoid redundant redraw of the exact same frame
-      if (targetIndex === lastDrawnFrameRef.current && lastValidImgRef.current) return;
-
       const img = getNearestFrame(targetIndex) || lastValidImgRef.current;
       if (!img || !img.complete || img.naturalWidth === 0) return;
 
+      // Skip draw only if the canvas already has this exact Image painted for this frame
+      if (img === lastDrawnImgRef.current && targetIndex === lastDrawnIndexRef.current) return;
+
       lastValidImgRef.current = img;
-      lastDrawnFrameRef.current = targetIndex;
+      lastDrawnImgRef.current = img;
+      lastDrawnIndexRef.current = targetIndex;
 
       drawCoverImage(ctx, img, canvas);
     },
@@ -119,12 +120,10 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
     lastWidthRef.current = displayWidth;
     lastHeightRef.current = displayHeight;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    // Buffer for mobile address bar collapse
-    const maxScreenHeight = Math.max(displayHeight, (typeof window !== 'undefined' && window.screen?.height) || displayHeight);
-
-    const targetWidth = Math.floor(displayWidth * dpr);
-    const targetHeight = Math.floor(maxScreenHeight * dpr);
+    // Cap DPR to 1.5 to keep GPU fill rate ultra-fast on mobile and high-DPI screens
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const targetWidth = Math.min(1920, Math.floor(displayWidth * dpr));
+    const targetHeight = Math.min(1080, Math.floor(displayHeight * dpr));
 
     if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
       canvas.width = targetWidth;
@@ -148,14 +147,16 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
   }, [handleResize]);
 
   /**
-   * Demand-driven RAF loop: Runs ONLY while scrubbing, completely pauses when settled
+   * Continuous RAF loop with frame-rate independent Delta-Time LERP
+   * Restores fluid, liquid-smooth animations on desktop and mobile
    */
-  const startAnimation = useCallback(() => {
-    if (isAnimatingRef.current) return;
-    isAnimatingRef.current = true;
+  useEffect(() => {
+    let isRunning = true;
     let lastTime = performance.now();
 
     const tick = (now: number) => {
+      if (!isRunning) return;
+
       const deltaMs = Math.min(64, Math.max(1, now - lastTime));
       lastTime = now;
 
@@ -163,27 +164,31 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
       const target = targetFrameRef.current;
       const diff = target - prev;
 
-      // When settled within a tiny fraction of a frame, draw target and sleep
-      if (Math.abs(diff) < 0.04) {
+      if (Math.abs(diff) > 0.001) {
+        const effectiveFactor = 1 - Math.pow(1 - lerpFactor, deltaMs / 16.667);
+        currentFrameRef.current = prev + diff * effectiveFactor;
+      } else {
         currentFrameRef.current = target;
-        renderFrame(target);
-        isAnimatingRef.current = false;
-        rafIdRef.current = null;
-        return;
       }
 
-      const effectiveFactor = 1 - Math.pow(1 - lerpFactor, deltaMs / 16.667);
-      currentFrameRef.current = prev + diff * effectiveFactor;
       renderFrame(currentFrameRef.current);
 
       rafIdRef.current = requestAnimationFrame(tick);
     };
 
     rafIdRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      isRunning = false;
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+    };
   }, [lerpFactor, renderFrame]);
 
   /**
-   * Scroll listener: updates target frame and wakes up RAF loop
+   * Scroll listener: updates target frame with passive, lightweight listener
    */
   useEffect(() => {
     let lastProgress = -1;
@@ -202,21 +207,13 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
       targetFrameRef.current = newTarget;
 
       requestPriorityFrame(newTarget);
-      startAnimation();
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-      isAnimatingRef.current = false;
-    };
-  }, [totalFrames, requestPriorityFrame, startAnimation]);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [totalFrames, requestPriorityFrame]);
 
   // Initial paint as soon as frame 1 or canvas is ready
   useEffect(() => {
