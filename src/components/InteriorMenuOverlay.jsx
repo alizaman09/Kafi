@@ -185,14 +185,15 @@ export default function InteriorMenuOverlay({
         </div>
 
         {/* 3-Column Grid: Exactly 2 rows (6 larger boxes) fit initially, 7th box onwards sits below the fold */}
-        <div className="w-full grid grid-cols-3 gap-2 xs:gap-2.5 sm:gap-3.5 md:gap-4 px-1 pointer-events-none">
+        <div className="w-full grid grid-cols-3 gap-2 xs:gap-2.5 sm:gap-3.5 md:gap-4 px-1 pointer-events-auto">
           {menuItems.map((item) => {
             const isAdded = !!cart[item.id];
             return (
               <div
                 key={item.id}
+                onClick={() => handleToggle(item)}
                 style={{ touchAction: 'pan-y' }}
-                className="group relative bg-[#341F14]/90 hover:bg-[#4A2E20]/95 md:backdrop-blur-md border border-[#EAD18D]/30 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_6px_18px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_24px_rgba(234,209,141,0.25)] transition-all duration-200 pointer-events-none"
+                className="group relative bg-[#341F14]/90 hover:bg-[#4A2E20]/95 md:backdrop-blur-md border border-[#EAD18D]/30 hover:border-[#EAD18D]/70 rounded-xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 md:p-3.5 flex flex-col items-center justify-between text-center shadow-[0_6px_18px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_24px_rgba(234,209,141,0.25)] transition-all duration-200 pointer-events-auto cursor-pointer"
               >
                 {/* Centered Product Image Container - Larger & Perfectly Visible */}
                 <div className="w-[44px] h-[44px] xs:w-[50px] xs:h-[50px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] flex items-center justify-center mx-auto mb-1 sm:mb-1.5 shrink-0 overflow-visible pointer-events-none">

@@ -120,10 +120,10 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
     lastWidthRef.current = displayWidth;
     lastHeightRef.current = displayHeight;
 
-    // Cap DPR to 1.5 to keep GPU fill rate ultra-fast on mobile and high-DPI screens
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const targetWidth = Math.min(1920, Math.floor(displayWidth * dpr));
-    const targetHeight = Math.min(1080, Math.floor(displayHeight * dpr));
+    // Cap DPR to 2 for razor-sharp rendering on Retina and 4K displays
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const targetWidth = Math.floor(displayWidth * dpr);
+    const targetHeight = Math.floor(displayHeight * dpr);
 
     if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
       canvas.width = targetWidth;
@@ -224,7 +224,7 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
     <div
       ref={containerRef}
       className="relative h-[600vh] w-full"
-      style={{ backgroundColor: '#1A100B', overscrollBehaviorY: 'none' }}
+      style={{ backgroundColor: '#1A100B' }}
     >
       {/* Fixed fullscreen viewport: covers 100% of screen, zero black gaps */}
       <div

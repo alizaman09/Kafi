@@ -111,10 +111,9 @@ export default function Storefront() {
 
   return (
     <main
-      className="relative w-full overflow-x-hidden"
+      className="relative w-full overflow-x-clip"
       style={{
         backgroundColor: 'var(--theme-bg-color, #1A100B)',
-        overscrollBehaviorY: 'none',
       }}
     >
       {/* 1. Underlying 300-Frame Scrollytelling Animation (Pinned Fullscreen Canvas) */}

@@ -9,24 +9,35 @@
 html,
 body {
   background-color: var(--theme-bg-color);
-  /* Use the exact dark background color of the app so no black gap shows */
-  overscroll-behavior-y: none;
-  /* Completely disables the elastic rubber-band bounce effect on mobile */
-  overscroll-behavior: none;
+  color: #F5F2EB;
 }
 
 @layer base {
 
-  html,
+  html {
+    background-color: var(--theme-bg-color);
+    color: #F5F2EB;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     background-color: var(--theme-bg-color);
     color: #F5F2EB;
     margin: 0;
     padding: 0;
-    max-width: 100vw;
-    overflow-x: hidden;
-    overscroll-behavior-y: none;
-    overscroll-behavior: none;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: clip;
+    touch-action: pan-y;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;

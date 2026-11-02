@@ -302,12 +302,12 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
       <div className="relative z-10 w-full max-w-7xl mx-auto pt-0 pb-1 sm:pb-2 md:pb-3 mt-auto flex flex-col md:flex-row items-stretch md:items-end justify-between gap-2 sm:gap-3 pointer-events-none shrink-0">
 
         {/* Left Side: 2 Compact Cards (Side-by-Side on all screen sizes) */}
-        <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto pointer-events-none">
+        <div className="flex items-end gap-1.5 sm:gap-3 w-full md:w-auto pointer-events-auto">
 
           {/* Card 1: Americano Latte — Enlarged Prominent Coffee Cup Image */}
           <div
             style={{ touchAction: 'pan-y' }}
-            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 md:backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-none"
+            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 md:backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 hover:border-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-auto"
           >
             <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1 pointer-events-none">
               <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm pointer-events-none">
@@ -361,7 +361,7 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
           {/* Card 2: Ceremonial Matcha — Enlarged Prominent Coffee Cup Image */}
           <div
             style={{ touchAction: 'pan-y' }}
-            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 md:backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-none"
+            className="flex-1 sm:flex-initial sm:w-[190px] md:w-[205px] bg-[#6E4E37]/85 hover:bg-[#6E4E37]/95 md:backdrop-blur-md p-1.5 sm:p-2.5 rounded-xl border border-white/25 hover:border-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] flex flex-col justify-between transition-all relative overflow-visible shrink-0 min-w-0 pointer-events-auto"
           >
             <div className="w-full flex items-center justify-center -mt-6 xs:-mt-7 sm:-mt-8 mb-1 pointer-events-none">
               <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-white/30 to-[#6E4E37]/50 p-1 shadow-lg flex items-center justify-center border-2 border-white/50 backdrop-blur-sm pointer-events-none">
@@ -415,7 +415,10 @@ export const HeroInspiration: React.FC<HeroInspirationProps> = ({
         </div>
 
         {/* Right Info: Story & Learn More — Compact Height */}
-        <div className="w-full md:max-w-[270px] lg:max-w-[300px] text-left flex flex-col items-start justify-end p-2 sm:p-2.5 rounded-xl bg-[#6E4E37]/65 backdrop-blur-[4px] border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.25)] shrink-0 pointer-events-none">
+        <div
+          style={{ touchAction: 'pan-y' }}
+          className="w-full md:max-w-[270px] lg:max-w-[300px] text-left flex flex-col items-start justify-end p-2 sm:p-2.5 rounded-xl bg-[#6E4E37]/65 hover:bg-[#6E4E37]/80 backdrop-blur-[4px] border border-white/25 shadow-[0_8px_20px_rgba(0,0,0,0.25)] shrink-0 transition-all pointer-events-auto"
+        >
           <h2 className="font-sans text-[11px] sm:text-xs font-extrabold tracking-wide text-white uppercase leading-snug mb-0.5 sm:mb-1 drop-shadow-sm pointer-events-none">
             Artisanal Roastery in Gulberg, Lahore
           </h2>
