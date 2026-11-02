@@ -111,7 +111,7 @@ export default function Storefront() {
 
   return (
     <main
-      className="relative w-full min-h-[100dvh] overflow-x-hidden"
+      className="relative w-full overflow-x-hidden"
       style={{
         backgroundColor: 'var(--theme-bg-color, #1A100B)',
         overscrollBehaviorY: 'none',

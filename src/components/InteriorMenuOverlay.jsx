@@ -146,21 +146,37 @@ export default function InteriorMenuOverlay({
   const totalCount = cartItems.reduce((sum, it) => sum + (it.quantity || 1), 0);
   const totalPrice = cartItems.reduce((sum, it) => sum + (it.numericPrice || 150) * (it.quantity || 1), 0);
 
+  // Natural scroll translation: 6 items fit initially. As user scrolls down past 0.36, Row 3 smoothly scrolls up
+  const extraRows = Math.ceil(Math.max(0, menuItems.length - 6) / 3);
+  const approxRowHeight = typeof window !== 'undefined' && window.innerWidth < 640 ? 190 : 255;
+  const maxShift = extraRows * approxRowHeight;
+
+  let menuTranslateY = 0;
+  if (scrollProgress > 0.36 && maxShift > 0) {
+    const t = Math.max(0, Math.min(1, (scrollProgress - 0.36) / (0.58 - 0.36)));
+    menuTranslateY = t * maxShift;
+  }
+
   return (
     <div
       style={{
         opacity,
         willChange: 'opacity',
       }}
-      className="fixed inset-0 z-30 pointer-events-none flex flex-col items-center justify-start overflow-hidden p-2 sm:p-4 pt-12 xs:pt-14 sm:pt-16 pb-16 sm:pb-24 transition-opacity duration-200 select-none"
+      className="fixed inset-0 z-30 pointer-events-none flex flex-col items-center justify-start overflow-hidden p-2 sm:p-4 pt-10 xs:pt-12 sm:pt-14 pb-12 sm:pb-20 select-none"
     >
       {/* Parent section holding the menu cards is transparent so background animation is fully visible */}
       <div
+        style={{
+          transform: `translate3d(0, -${menuTranslateY}px, 0)`,
+          willChange: 'transform',
+          transition: 'transform 0.08s ease-out',
+        }}
         className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center bg-transparent pointer-events-none"
       >
         {/* Sleek Compact Header with Ample Top Spacing */}
         <div className="text-center mb-2.5 xs:mb-3 sm:mb-4 shrink-0 pointer-events-none">
-          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-[#2A1810]/85 border border-[#EAD18D]/50 text-[#EAD18D] text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md backdrop-blur-sm pointer-events-auto" style={{ touchAction: 'pan-y' }}>
+          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-[#2A1810]/85 border border-[#EAD18D]/50 text-[#EAD18D] text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-widest uppercase font-black shadow-md backdrop-blur-sm pointer-events-none">
             ★ KAFI GULBERG • SPECIALTY COFFEE MENU ★
           </span>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black text-white mt-1.5 sm:mt-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] pointer-events-none">

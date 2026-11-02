@@ -6,13 +6,17 @@
   --theme-bg-color: #1A100B;
 }
 
-html, body {
-  background-color: var(--theme-bg-color); /* Use the exact dark background color of the app so no black gap shows */
-  overscroll-behavior-y: none; /* Completely disables the elastic rubber-band bounce effect on mobile */
+html,
+body {
+  background-color: var(--theme-bg-color);
+  /* Use the exact dark background color of the app so no black gap shows */
+  overscroll-behavior-y: none;
+  /* Completely disables the elastic rubber-band bounce effect on mobile */
   overscroll-behavior: none;
 }
 
 @layer base {
+
   html,
   body {
     background-color: var(--theme-bg-color);

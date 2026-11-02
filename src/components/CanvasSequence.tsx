@@ -91,25 +91,46 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
     [getNearestFrame, totalFrames]
   );
 
+  const lastWidthRef = useRef<number>(0);
+  const lastHeightRef = useRef<number>(0);
+
   /**
    * Retina DPR calibration & dynamic resize
+   * Safe against mobile address bar collapse/expand to prevent black screen flashing
    */
   const handleResize = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
 
+    // Check if resize is just the mobile URL bar collapsing/expanding (< 150px height diff with identical width)
+    const lastW = lastWidthRef.current;
+    const lastH = lastHeightRef.current;
+    const widthDiff = Math.abs(displayWidth - lastW);
+    const heightDiff = Math.abs(displayHeight - lastH);
+
+    if (lastW > 0 && widthDiff === 0 && heightDiff < 150) {
+      // Mobile address bar hide/show: DO NOT re-allocate canvas backing store!
+      return;
+    }
+
+    lastWidthRef.current = displayWidth;
+    lastHeightRef.current = displayHeight;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Buffer for mobile address bar collapse
+    const maxScreenHeight = Math.max(displayHeight, (typeof window !== 'undefined' && window.screen?.height) || displayHeight);
+
     const targetWidth = Math.floor(displayWidth * dpr);
-    const targetHeight = Math.floor(displayHeight * dpr);
+    const targetHeight = Math.floor(maxScreenHeight * dpr);
 
     if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
       canvas.width = targetWidth;
       canvas.height = targetHeight;
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
 
       if (lastValidImgRef.current) {
         const ctx = canvas.getContext('2d', { alpha: false });
@@ -213,9 +234,13 @@ export const CanvasSequence: React.FC<CanvasSequenceProps> = memo(({
         className="pointer-events-none overflow-hidden"
         style={{
           position: 'fixed',
-          inset: 0,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           width: '100vw',
-          height: '100vh',
+          height: '100%',
+          minHeight: '100vh',
           zIndex: 0,
         }}
       >
